@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sims 4 Lore Manager - Mundo Novios</title>
+  
+  <!-- Hoja de estilos vinculada -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- SDK de Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <header>
+    <h1>Sims 4 Lore Manager ✨</h1>
+    <p class="subtitle">Mundo Novios • Base de datos compartida en la nube</p>
+  </header>
+
+  <div class="container">
+    <!-- Formulario para crear Sims -->
+    <div class="card">
+      <h2>Añadir Nuevo Sim</h2>
+      <form id="simForm">
+        <div class="form-group">
+          <label for="name">Nombre completo del Sim *</label>
+          <input type="text" id="name" required placeholder="Ej. Bella Goth">
+        </div>
+
+        <div class="form-group">
+          <label for="image_url">URL de la foto (imagen)</label>
+          <input type="url" id="image_url" placeholder="https://ejemplo.com/foto.jpg">
+        </div>
+
+        <div class="form-group">
+          <label for="family">Familia / Dinastía</label>
+          <input type="text" id="family" placeholder="Ej. Los Goth">
+        </div>
+
+        <div class="form-group">
+          <label for="parent_id">Padre / Madre / Tutor (para el árbol genealógico)</label>
+          <select id="parent_id">
+            <option value="">-- Ninguno (Fundador/a) --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="generation">Generación o Rol</label>
+          <input type="text" id="generation" placeholder="Ej. Generación 1, Heredero, etc.">
+        </div>
+
+        <div class="form-group">
+          <label for="traits">Rasgos y Aspiración</label>
+          <input type="text" id="traits" placeholder="Ej. Romántica, Alegre, Aspiración a Gran Familia">
+        </div>
+
+        <div class="form-group">
+          <label for="lore">Lore e Historia Principal</label>
+          <textarea id="lore" rows="3" placeholder="Escribe aquí sus secretos, trayectoria de vida o eventos importantes..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="extra_info">Datos Extra</label>
+          <input type="text" id="extra_info" placeholder="Ej. Carrera profesional, pareja, gustos, notas adicionales">
+        </div>
+
+        <button type="submit">Guardar Sim en la Nube ☁️</button>
+      </form>
+    </div>
+
+    <!-- Lista de Sims guardados -->
+    <div class="card">
+      <h2>Nuestros Sims Registrados</h2>
+      <div id="simsContainer" class="sim-grid">
+        <p style="color: var(--text-muted); text-align: center; width: 100%;">Cargando datos desde Supabase...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Archivo JavaScript vinculado al final del body -->
+  <script src="js/app.js"></script>
+</body>
+</html>

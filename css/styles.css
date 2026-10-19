@@ -1,0 +1,175 @@
+:root {
+  --bg-main: #181528;
+  --bg-card: #231f3a;
+  --accent-lavender: #c4b5fd;
+  --accent-periwinkle: #93c5fd;
+  --accent-mauve: #f472b6;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --border-color: #37305a;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+h1 {
+  color: var(--accent-lavender);
+  margin-bottom: 5px;
+}
+
+p.subtitle {
+  color: var(--text-muted);
+  margin-top: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+h2 {
+  color: var(--accent-periwinkle);
+  margin-top: 0;
+  font-size: 1.3rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+label {
+  display: block;
+  color: var(--accent-lavender);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  background-color: #181528;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-lavender);
+}
+
+button {
+  background-color: var(--accent-lavender);
+  color: #181528;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover {
+  background-color: #b39ddb;
+}
+
+button:active {
+  transform: scale(0.99);
+}
+
+.sim-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 15px;
+}
+
+.sim-card {
+  background-color: #1f1b32;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sim-card img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+  border: 3px solid var(--accent-periwinkle);
+}
+
+.sim-name {
+  color: var(--accent-lavender);
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 4px 0;
+}
+
+.sim-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.sim-badge {
+  background-color: rgba(147, 197, 253, 0.15);
+  color: var(--accent-periwinkle);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.sim-lore {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-main);
+  background-color: rgba(0,0,0,0.2);
+  padding: 8px 10px;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  margin-top: 6px;
+}
+
+.sim-extra {
+  font-size: 0.8rem;
+  color: var(--accent-mauve);
+  margin-top: 6px;
+  width: 100%;
+  text-align: left;
+}
