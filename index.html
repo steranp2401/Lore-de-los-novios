@@ -3,29 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sims 4 Lore Manager - Pastel Edition</title>
+  <title>La saga de Los Sims - Lore Manager</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- SDK de Supabase v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-  <!-- Header con Plumbob Pastel -->
+  <!-- Header -->
   <header>
-    <div class="plumbob-badge">
-      <svg class="plumbob-icon" viewBox="0 0 24 24">
-        <polygon points="12,2 18,12 12,22 6,12" />
-      </svg>
+    <div class="brand">
+      <div class="plumbob-badge">
+        <svg class="plumbob-icon" viewBox="0 0 24 24">
+          <polygon points="12,2 18,12 12,22 6,12" />
+        </svg>
+      </div>
+      <div>
+        <h1>La saga de Los Sims</h1>
+        <p>Historia de unos novios</p>
+      </div>
     </div>
-    <h1>Sims 4 Lore Manager</h1>
-    <p>Organiza la genealogía, historias, legados, viviendas y mascotas de tu partida</p>
   </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h2>La Profecía del Primogénito</h2>
+    <p>Todo comenzó con la desesperada lucha de unos padres por proteger a su primer hijo. Al enterarse de una aterradora profecía que predecía su muerte, hicieron lo imposible por burlar al destino.</p>
+  </section>
 
   <!-- Barra de Búsqueda y Estadísticas -->
   <div class="top-controls">
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Buscar por nombre, rasgo, mundo o historia..." oninput="handleSearch()">
+      <input type="text" id="searchInput" placeholder="Buscar por nombre, rasgo, mundo..." oninput="handleSearch()">
     </div>
     <div class="stats-badges">
       <span class="stat-pill">Sims: <strong id="statSims">0</strong></span>
@@ -35,57 +48,83 @@
     </div>
   </div>
 
-  <!-- Navegación por Pestañas -->
-  <nav>
-    <button class="nav-btn active" onclick="switchTab('arbol', event)">🌳 Árbol Genealógico</button>
-    <button class="nav-btn" onclick="switchTab('lore', event)">📖 Lore & Historias</button>
-    <button class="nav-btn" onclick="switchTab('casas', event)">🏡 Casas & Mundos</button>
-    <button class="nav-btn" onclick="switchTab('mascotas', event)">🐾 Mascotas</button>
-  </nav>
+  <!-- Contenedor Principal (Tarjetas laterales + Secciones) -->
+  <div class="main-layout">
 
-  <!-- PESTAÑA: ÁRBOL GENEALÓGICO -->
-  <div id="arbol" class="tab-content active">
-    <div class="section-header">
-      <h2 class="section-title">Estructura Genealógica del Legado</h2>
-      <div class="btn-group">
-        <button class="action-btn secondary" onclick="toggleTreeViewMode()" id="toggleViewBtn">Vista Lista</button>
-        <button class="action-btn" onclick="openSimModal()">+ Añadir Sim Fundador</button>
+    <!-- Navegación Lateral -->
+    <nav>
+      <button class="nav-btn active" onclick="switchTab('arbol', event)">
+        <span class="nav-title">Árbol genealógico</span>
+        <span class="nav-desc">Explora el legado, las generaciones y el linaje de cada familia.</span>
+        <span class="nav-link-text">Ver árbol →</span>
+      </button>
+
+      <button class="nav-btn" onclick="switchTab('mascotas', event)">
+        <span class="nav-title">Animalines</span>
+        <span class="nav-desc">Conoce a cada animalín pequeñín y su familia completa.</span>
+        <span class="nav-link-text">Ver mascotas →</span>
+      </button>
+
+      <button class="nav-btn" onclick="switchTab('lore', event)">
+        <span class="nav-title">Historia</span>
+        <span class="nav-desc">Adéntrate en la biografía de cada Sim y sus acontecimientos.</span>
+        <span class="nav-link-text">Leer capítulos →</span>
+      </button>
+
+      <button class="nav-btn" onclick="switchTab('casas', event)">
+        <span class="nav-title">Casa</span>
+        <span class="nav-desc">¿Dónde vive cada Sim y qué secretos guardan sus solares?</span>
+        <span class="nav-link-text">Ver residencias →</span>
+      </button>
+    </nav>
+
+    <!-- PESTAÑAS Y VISTAS -->
+    <div>
+      <!-- ÁRBOL GENEALÓGICO -->
+      <div id="arbol" class="tab-content active">
+        <div class="section-header">
+          <h2 class="section-title">Estructura Genealógica</h2>
+          <div style="display:flex; gap:8px;">
+            <button class="action-btn secondary" onclick="toggleTreeViewMode()" id="toggleViewBtn">Vista Lista</button>
+            <button class="action-btn" onclick="openSimModal()">+ Añadir Sim Fundador</button>
+          </div>
+        </div>
+        <div class="tree-viewport" id="treeContainer">
+          <div class="tree-wrapper" id="treeView"></div>
+        </div>
+      </div>
+
+      <!-- HISTORIA / LORE -->
+      <div id="lore" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">Capítulos y Lore</h2>
+          <button class="action-btn" onclick="openLoreModal()">+ Registrar Capítulo</button>
+        </div>
+        <div class="cards-grid" id="loreGrid"></div>
+      </div>
+
+      <!-- CASAS -->
+      <div id="casas" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">Residencias y Mundos</h2>
+          <button class="action-btn" onclick="openHouseModal()">+ Añadir Residencia</button>
+        </div>
+        <div class="cards-grid" id="casasGrid"></div>
+      </div>
+
+      <!-- MASCOTAS -->
+      <div id="mascotas" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">Animalines y Mascotas</h2>
+          <button class="action-btn" onclick="openPetModal()">+ Añadir Mascota</button>
+        </div>
+        <div class="cards-grid" id="mascotasGrid"></div>
       </div>
     </div>
-    
-    <div class="tree-viewport" id="treeContainer">
-      <div class="tree-wrapper" id="treeView"></div>
-    </div>
+
   </div>
 
-  <!-- PESTAÑA: LORE & HISTORIAS -->
-  <div id="lore" class="tab-content">
-    <div class="section-header">
-      <h2 class="section-title">Acontecimientos y Biografías</h2>
-      <button class="action-btn" onclick="openLoreModal()">+ Registrar Evento de Lore</button>
-    </div>
-    <div class="cards-grid" id="loreGrid"></div>
-  </div>
-
-  <!-- PESTAÑA: CASAS & MUNDOS -->
-  <div id="casas" class="tab-content">
-    <div class="section-header">
-      <h2 class="section-title">Solares y Residencias</h2>
-      <button class="action-btn" onclick="openHouseModal()">+ Añadir Residencia</button>
-    </div>
-    <div class="cards-grid" id="casasGrid"></div>
-  </div>
-
-  <!-- PESTAÑA: MASCOTAS -->
-  <div id="mascotas" class="tab-content">
-    <div class="section-header">
-      <h2 class="section-title">Mascotas y Compañeros</h2>
-      <button class="action-btn" onclick="openPetModal()">+ Añadir Mascota</button>
-    </div>
-    <div class="cards-grid" id="mascotasGrid"></div>
-  </div>
-
-  <!-- MODAL: REGISTRAR / EDITAR SIM -->
+  <!-- MODALES INTÁCTOS -->
   <div class="modal-overlay" id="simModal">
     <div class="modal-card">
       <h2 id="simModalTitle">Añadir Nuevo Sim</h2>
@@ -112,15 +151,15 @@
         </div>
         <div class="form-group">
           <label>Rasgos y Aspiración:</label>
-          <input type="text" id="simTraits" placeholder="Ej: Romántica, Alegre | Aspiración: Amor">
+          <input type="text" id="simTraits" placeholder="Ej: Romántica, Alegre">
         </div>
         <div class="form-group">
           <label>Hogar / Residencia Actual:</label>
-          <input type="text" id="simHouse" placeholder="Ej: Mansión de la Colina (Willow Creek)">
+          <input type="text" id="simHouse" placeholder="Ej: Mansión de la Colina">
         </div>
         <div class="form-group">
           <label>Lore / Historia de este Sim:</label>
-          <textarea id="simLore" rows="3" placeholder="Escribe sus secretos, biografía o eventos importantes..."></textarea>
+          <textarea id="simLore" rows="3" placeholder="Biografía o eventos..."></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('simModal')">Cancelar</button>
@@ -130,22 +169,21 @@
     </div>
   </div>
 
-  <!-- MODAL: EVENTO DE LORE -->
   <div class="modal-overlay" id="loreModal">
     <div class="modal-card">
-      <h2>Añadir Capítulo / Evento de Lore</h2>
+      <h2>Añadir Capítulo / Evento</h2>
       <form onsubmit="saveLoreEvent(event)">
         <div class="form-group">
-          <label>Título del Acontecimiento:</label>
-          <input type="text" id="loreTitle" required placeholder="Ej: La Misteriosa Desaparición">
+          <label>Título:</label>
+          <input type="text" id="loreTitle" required>
         </div>
         <div class="form-group">
           <label>Sims Involucrados:</label>
-          <input type="text" id="loreSims" placeholder="Ej: Bella y Mortimer Goth">
+          <input type="text" id="loreSims">
         </div>
         <div class="form-group">
-          <label>Detalles de la Historia:</label>
-          <textarea id="loreDesc" rows="4" required placeholder="Relata los acontecimientos de este capítulo..."></textarea>
+          <label>Detalles:</label>
+          <textarea id="loreDesc" rows="4" required></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('loreModal')">Cancelar</button>
@@ -155,22 +193,21 @@
     </div>
   </div>
 
-  <!-- MODAL: REGISTRAR CASA -->
   <div class="modal-overlay" id="houseModal">
     <div class="modal-card">
-      <h2>Añadir Residencia o Solar</h2>
+      <h2>Añadir Residencia</h2>
       <form onsubmit="saveHouse(event)">
         <div class="form-group">
           <label>Nombre del Solar:</label>
-          <input type="text" id="houseName" required placeholder="Ej: Villa Crisantemo">
+          <input type="text" id="houseName" required>
         </div>
         <div class="form-group">
-          <label>Mundo / Barrio:</label>
-          <input type="text" id="houseWorld" placeholder="Ej: Oasis Springs / San Myshuno">
+          <label>Mundo:</label>
+          <input type="text" id="houseWorld">
         </div>
         <div class="form-group">
-          <label>Notas o Descripción:</label>
-          <textarea id="houseDesc" rows="3" placeholder="Estilo arquitectónico, habitaciones, historia del solar..."></textarea>
+          <label>Notas:</label>
+          <textarea id="houseDesc" rows="3"></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('houseModal')">Cancelar</button>
@@ -180,26 +217,25 @@
     </div>
   </div>
 
-  <!-- MODAL: REGISTRAR MASCOTA -->
   <div class="modal-overlay" id="petModal">
     <div class="modal-card">
       <h2>Añadir Mascota</h2>
       <form onsubmit="savePet(event)">
         <div class="form-group">
-          <label>Nombre de la Mascota:</label>
-          <input type="text" id="petName" required placeholder="Ej: Pelusa / Sparky">
+          <label>Nombre:</label>
+          <input type="text" id="petName" required>
         </div>
         <div class="form-group">
-          <label>Especie y Rasgos:</label>
-          <input type="text" id="petMeta" placeholder="Ej: Perro (Border Collie) | Juguetón">
+          <label>Especie/Detalles:</label>
+          <input type="text" id="petMeta" placeholder="Ej: Perro / Perdiguero">
         </div>
         <div class="form-group">
-          <label>Familia / Dueños:</label>
-          <input type="text" id="petOwner" placeholder="Ej: Familia Fundadora">
+          <label>Dueño:</label>
+          <input type="text" id="petOwner">
         </div>
         <div class="form-group">
-          <label>Historia / Notas:</label>
-          <textarea id="petDesc" rows="3" placeholder="Detalles o curiosidades de la mascota..."></textarea>
+          <label>Notas:</label>
+          <textarea id="petDesc" rows="3"></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('petModal')">Cancelar</button>
@@ -209,7 +245,7 @@
     </div>
   </div>
 
-  <!-- Fuerza la recarga del JS evitando caché -->
-  <script src="js/app.js?v=2"></script>
+  <!-- Cargar tu JavaScript existente -->
+  <script src="js/app.js"></script>
 </body>
 </html>
