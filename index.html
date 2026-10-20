@@ -3,140 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>La saga de Los Sims</title>
+  <title>La saga de Los Sims - Lore Manager</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- SDK de Supabase v2 -->
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-  <!-- BARRA AZUL SUPERIOR (HEADER) -->
+  <!-- HEADER -->
   <header>
     <div class="brand">
-      <div class="plumbob-badge">
-        🏠
+      <div class="brand-icon">
+        <i data-lucide="home" size="20"></i>
       </div>
-      <div>
+      <div class="brand-text">
         <h1>La saga de Los Sims</h1>
         <p>Historia de unos novios</p>
       </div>
     </div>
-    <!-- Avatar superpuesto -->
+    <!-- Avatar superpuesto exacto al centro -->
     <div class="header-avatar">
-      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="Luna Rivera">
+      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="Protagonista" />
     </div>
   </header>
 
-  <!-- SECCIÓN LILA (HERO) -->
+  <!-- SECCIÓN HERO -->
   <section class="hero">
     <h2>La Profecía del Primogénito</h2>
     <p>Todo comenzó con la desesperada lucha de unos padres por proteger a su primer hijo. Al enterarse de una aterradora profecía que predecía su muerte, hicieron lo imposible por burlar al destino.</p>
-    <button class="btn-hero" onclick="openLoreModal()">Crear una nueva historia</button>
+    <button class="btn-primary" onclick="openLoreModal()">Crear una nueva historia</button>
   </section>
 
-  <!-- BUSCADOR Y ESTADÍSTICAS -->
-  <div class="top-controls">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Buscar por nombre, rasgo, mundo..." oninput="handleSearch()">
-    </div>
-    <div class="stats-badges">
-      <span class="stat-pill">Sims: <strong id="statSims">0</strong></span>
-      <span class="stat-pill">Historias: <strong id="statLore">0</strong></span>
-      <span class="stat-pill">Solares: <strong id="statHouses">0</strong></span>
-      <span class="stat-pill">Mascotas: <strong id="statPets">0</strong></span>
-    </div>
-  </div>
-
-  <!-- DISPOSICIÓN PRINCIPAL (TARJETAS LATERALES + CONTENIDO) -->
+  <!-- CONTENEDOR PRINCIPAL: SIDEBAR + VISTAS -->
   <div class="main-layout">
 
-    <!-- COLUMNA IZQUIERDA: TARJETAS DE NAVEGACIÓN -->
-    <nav>
-      <button class="nav-card active" onclick="switchTab('arbol', event)">
-        <div class="card-icon-box">📖</div>
-        <h3>Arbol genealógico</h3>
-        <p>Descubre el legado, las generaciones y el linaje de cada familia.</p>
-        <span class="card-action-text">Capítulos →</span>
+    <!-- BARRA LATERAL CON LAS 4 TARJETAS EXACTAS -->
+    <aside class="sidebar">
+      <button class="nav-card active" onclick="switchTab('arbol', event)" id="btn-arbol">
+        <div class="card-icon"><i data-lucide="book-open" size="20"></i></div>
+        <h3>Árbol genealógico</h3>
+        <p>Explora el legado, las generaciones y el linaje de cada familia.</p>
+        <span class="card-link">Ver árbol →</span>
       </button>
 
-      <button class="nav-card" onclick="switchTab('mascotas', event)">
-        <div class="card-icon-box">👥</div>
+      <button class="nav-card" onclick="switchTab('mascotas', event)" id="btn-mascotas">
+        <div class="card-icon"><i data-lucide="users" size="20"></i></div>
         <h3>Animalines</h3>
         <p>Conoce a cada animalín pequeñín y su familia completa.</p>
-        <span class="card-action-text">Perfiles →</span>
+        <span class="card-link">Ver mascotas →</span>
       </button>
 
-      <button class="nav-card" onclick="switchTab('lore', event)">
-        <div class="card-icon-box">🌳</div>
+      <button class="nav-card" onclick="switchTab('lore', event)" id="btn-lore">
+        <div class="card-icon"><i data-lucide="trees" size="20"></i></div>
         <h3>Historia</h3>
         <p>Adéntrate en la biografía de cada Sim y en los acontecimientos que marcaron su destino.</p>
-        <span class="card-action-text">Ver árbol →</span>
+        <span class="card-link">Leer capítulos →</span>
       </button>
 
-      <button class="nav-card" onclick="switchTab('casas', event)">
-        <div class="card-icon-box">🖼️</div>
+      <button class="nav-card" onclick="switchTab('casas', event)" id="btn-casas">
+        <div class="card-icon"><i data-lucide="image" size="20"></i></div>
         <h3>Casa</h3>
-        <p>¿Dónde vive cada Sim?</p>
-        <span class="card-action-text">Fotos →</span>
+        <p>¿Dónde vive cada Sim y qué secretos guardan sus solares?</p>
+        <span class="card-link">Ver residencias →</span>
       </button>
-    </nav>
+    </aside>
 
-    <!-- COLUMNA DERECHA: SECCIONES ACTIVA -->
-    <div>
-      <!-- PESTAÑA ÁRBOL GENEALÓGICO -->
-      <div id="arbol" class="tab-content active">
-        <div class="tree-header-flex">
+    <!-- ZONA DERECHA: CONTENIDO DE LAS PESTAÑAS -->
+    <main>
+      <!-- ÁRBOL GENEALÓGICO -->
+      <section id="arbol" class="tab-content active tree-container">
+        <div class="tree-header">
           <div>
             <h3>Árbol genealógico</h3>
             <p>Familia Rivera - tres generaciones</p>
           </div>
           <div style="display:flex; align-items:center; gap:10px;">
-            <span class="gen-pill">♡ 3 generaciones</span>
-            <button class="action-btn secondary" onclick="toggleTreeViewMode()" id="toggleViewBtn">Vista Lista</button>
-            <button class="action-btn" onclick="openSimModal()">+ Añadir Sim</button>
+            <div class="pill">♡ 3 generaciones</div>
+            <button class="action-btn secondary" onclick="toggleTreeViewMode()" id="toggleViewBtn" style="padding:6px 12px; font-size:0.8rem; background:#fff; border:1px solid #eae6f5; border-radius:12px; cursor:pointer;">Vista Lista</button>
+            <button class="action-btn" onclick="openSimModal()" style="padding:6px 12px; font-size:0.8rem; background:#809eff; color:#fff; border:none; border-radius:12px; cursor:pointer;">+ Añadir Sim</button>
           </div>
         </div>
-
         <div class="tree-viewport" id="treeContainer">
           <div class="tree-wrapper" id="treeView"></div>
         </div>
-      </div>
+      </section>
 
-      <!-- PESTAÑA HISTORIA -->
-      <div id="lore" class="tab-content">
-        <div class="tree-header-flex">
-          <h3>Acontecimientos e Historias</h3>
-          <button class="action-btn" onclick="openLoreModal()">+ Registrar Capítulo</button>
+      <!-- HISTORIA / LORE -->
+      <section id="lore" class="tab-content tree-container">
+        <div class="tree-header">
+          <div>
+            <h3>Acontecimientos e Historias</h3>
+            <p>Capítulos del legado</p>
+          </div>
+          <button class="action-btn" onclick="openLoreModal()" style="padding:6px 12px; font-size:0.8rem; background:#809eff; color:#fff; border:none; border-radius:12px; cursor:pointer;">+ Registrar Capítulo</button>
         </div>
         <div class="cards-grid" id="loreGrid"></div>
-      </div>
+      </section>
 
-      <!-- PESTAÑA CASAS -->
-      <div id="casas" class="tab-content">
-        <div class="tree-header-flex">
-          <h3>Residencias de los Sims</h3>
-          <button class="action-btn" onclick="openHouseModal()">+ Añadir Residencia</button>
+      <!-- CASAS -->
+      <section id="casas" class="tab-content tree-container">
+        <div class="tree-header">
+          <div>
+            <h3>Residencias y Mundos</h3>
+            <p>Solares y ubicaciones</p>
+          </div>
+          <button class="action-btn" onclick="openHouseModal()" style="padding:6px 12px; font-size:0.8rem; background:#809eff; color:#fff; border:none; border-radius:12px; cursor:pointer;">+ Añadir Residencia</button>
         </div>
         <div class="cards-grid" id="casasGrid"></div>
-      </div>
+      </section>
 
-      <!-- PESTAÑA MASCOTAS -->
-      <div id="mascotas" class="tab-content">
-        <div class="tree-header-flex">
-          <h3>Animalines y Mascotas</h3>
-          <button class="action-btn" onclick="openPetModal()">+ Añadir Mascota</button>
+      <!-- MASCOTAS -->
+      <section id="mascotas" class="tab-content tree-container">
+        <div class="tree-header">
+          <div>
+            <h3>Animalines y Mascotas</h3>
+            <p>Compañeros de la familia</p>
+          </div>
+          <button class="action-btn" onclick="openPetModal()" style="padding:6px 12px; font-size:0.8rem; background:#809eff; color:#fff; border:none; border-radius:12px; cursor:pointer;">+ Añadir Mascota</button>
         </div>
         <div class="cards-grid" id="mascotasGrid"></div>
-      </div>
-    </div>
+      </section>
+    </main>
 
   </div>
 
-  <!-- MODALES DE REGISTRO (CONEXIÓN CON SUPABASE) -->
+  <!-- MODALES DE SUPABASE -->
   <div class="modal-overlay" id="simModal">
     <div class="modal-card">
       <h2 id="simModalTitle">Añadir Nuevo Sim</h2>
@@ -174,7 +170,7 @@
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('simModal')">Cancelar</button>
-          <button type="submit" class="action-btn">Guardar Sim</button>
+          <button type="submit" class="action-btn" style="background:#809eff; color:#fff; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Guardar Sim</button>
         </div>
       </form>
     </div>
@@ -198,7 +194,7 @@
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('loreModal')">Cancelar</button>
-          <button type="submit" class="action-btn">Guardar Evento</button>
+          <button type="submit" class="action-btn" style="background:#809eff; color:#fff; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Guardar Evento</button>
         </div>
       </form>
     </div>
@@ -222,7 +218,7 @@
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('houseModal')">Cancelar</button>
-          <button type="submit" class="action-btn">Guardar Residencia</button>
+          <button type="submit" class="action-btn" style="background:#809eff; color:#fff; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Guardar Residencia</button>
         </div>
       </form>
     </div>
@@ -250,12 +246,26 @@
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('petModal')">Cancelar</button>
-          <button type="submit" class="action-btn">Guardar Mascota</button>
+          <button type="submit" class="action-btn" style="background:#809eff; color:#fff; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Guardar Mascota</button>
         </div>
       </form>
     </div>
   </div>
 
+  <script>
+    // Activar los iconos de Lucide automáticamente
+    lucide.createIcons();
+
+    // Mejora visual para marcar la tarjeta lateral activa al cambiar de pestaña
+    const originalSwitchTab = window.switchTab;
+    window.switchTab = function(tabId, ev) {
+      if (originalSwitchTab) originalSwitchTab(tabId, ev);
+      document.querySelectorAll('.nav-card').forEach(card => card.classList.remove('active'));
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if (activeBtn) activeBtn.classList.add('active');
+    };
+  </script>
+  <!-- Tu JS de Supabase intacto -->
   <script src="js/app.js"></script>
 </body>
 </html>
