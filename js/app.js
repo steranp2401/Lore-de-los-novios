@@ -28,7 +28,7 @@ async function loadAllData() {
   }
 }
 
-// FETCH FUNCTIONS (Supabase)
+// FETCH FUNCTIONS (Supabase con tus columnas exactas)
 async function fetchSims() {
   const { data, error } = await supabase.from('sims').select('*').order('id', { ascending: true });
   if (!error && data) simsData = data;
@@ -80,7 +80,7 @@ window.openSimModal = function(parentId = null) {
   if (select) {
     select.innerHTML = '<option value="">-- Ninguno (Fundador Raíz) --</option>';
     simsData.forEach(sim => {
-      select.innerHTML += `<option value="${sim.id}">${sim.name} (${sim.gen || ''})</option>`;
+      select.innerHTML += `<option value="${sim.id}">${sim.name} (${sim.generation || ''})</option>`;
     });
     if (parentId) select.value = parentId;
   }
@@ -99,18 +99,21 @@ window.toggleTreeViewMode = function() {
   renderTree();
 };
 
-// SAVE FUNCTIONS (Supabase)
+// SAVE FUNCTIONS (Adaptadas a tus nombres de columnas)
 window.saveSim = async function(e) {
   e.preventDefault();
   const parentSelectVal = document.getElementById('simParentSelect').value;
 
   const newSim = {
-    parent_id: parentSelectVal ? parseInt(parentSelectVal) : null,
+    parent_id: parentSelectVal ? parentSelectVal : null,
     name: document.getElementById('simName').value,
-    gen: document.getElementById('simGen').value,
+    generation: document.getElementById('simGen').value,
     traits: document.getElementById('simTraits').value || "Sin rasgos",
     house: document.getElementById('simHouse').value || "",
-    lore: document.getElementById('simLore').value || ""
+    lore: document.getElementById('simLore').value || "",
+    family: "Principal",
+    image_url: "",
+    extra_info: ""
   };
 
   const { error } = await supabase.from('sims').insert([newSim]);
@@ -214,7 +217,7 @@ function renderTree() {
         <div class="info-card">
           <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
           <h3>${sim.name}</h3>
-          <div class="meta">${sim.gen || ''} • ${sim.traits || ''}</div>
+          <div class="meta">${sim.generation || ''} • ${sim.traits || ''}</div>
           <p>${sim.lore || "Sin lore registrado."}</p>
           ${sim.house ? `<span class="card-footer-tag">🏡 ${sim.house}</span>` : ''}
           <div style="margin-top:8px;">
@@ -229,7 +232,7 @@ function renderTree() {
   }
 
   function buildBranch(parentId) {
-    const children = filteredSims.filter(s => s.parent_id === parentId);
+    const children = filteredSims.filter(s => String(s.parent_id) === String(parentId));
     if (children.length === 0) return '';
 
     let branchHtml = '<ul>';
@@ -239,7 +242,7 @@ function renderTree() {
           <div class="sim-tree-card">
             <div class="sim-tree-header">
               <h4>${child.name}</h4>
-              <span class="gen-badge">${child.gen || ''}</span>
+              <span class="gen-badge">${child.generation || ''}</span>
             </div>
             <div class="sim-tree-meta">${child.traits || ''}</div>
             ${child.house ? `<div style="font-size:0.75rem; color:var(--text-muted);">🏡 ${child.house}</div>` : ''}
@@ -266,7 +269,7 @@ function renderTree() {
           <div class="sim-tree-card">
             <div class="sim-tree-header">
               <h4>${root.name}</h4>
-              <span class="gen-badge">${root.gen || ''}</span>
+              <span class="gen-badge">${root.generation || ''}</span>
             </div>
             <div class="sim-tree-meta">${root.traits || ''}</div>
             ${root.house ? `<div style="font-size:0.75rem; color:var(--text-muted);">🏡 ${root.house}</div>` : ''}
@@ -285,7 +288,7 @@ function renderTree() {
         <li>
           <div class="sim-tree-card">
             <h4>${sim.name}</h4>
-            <div class="sim-tree-meta">${sim.gen || ''}</div>
+            <div class="sim-tree-meta">${sim.generation || ''}</div>
           </div>
         </li>
       `;
@@ -317,7 +320,7 @@ function renderLore() {
       <div class="info-card">
         <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
         <h3>${sim.name}</h3>
-        <div class="meta">${sim.gen || ''} • ${sim.traits || ''}</div>
+        <div class="meta">${sim.generation || ''} • ${sim.traits || ''}</div>
         <p>${sim.lore ? sim.lore : "Sin biografía escrita aún."}</p>
         ${sim.house ? `<span class="card-footer-tag">🏡 ${sim.house}</span>` : ''}
       </div>
