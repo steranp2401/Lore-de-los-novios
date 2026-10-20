@@ -1,93 +1,385 @@
-// Configuración de conexión con tus claves reales de Supabase
-const SUPABASE_URL = 'https://sdmlcxqlrywncxtezjsn.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkbWxjeHFscnl3bmN4dGV6anNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0M1Y2NzEsImV4cCI6MjEwNzk4NzY3MX0.R-euYD3pKFw8OAN5DX65pLqORtM3co-YTDLN5KdQHPY';
+// Configuración de Supabase (Sustituye por tus claves)
+const SUPABASE_URL = "TU_SUPABASE_URL_AQUI";
+const SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY_AQUI";
 
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 let simsData = [];
+let extraLore = [];
+let housesData = [];
+let petsData = [];
 
-// Cargar la lista completa de Sims desde Supabase
-async function cargarSims() {
-  const { data, error } = await _supabase.from('sims').select('*').order('id', { ascending: true });
-  
-  if (error) {
-    console.error('Error de lectura:', error);
-    document.getElementById('simsContainer').innerHTML = '<p style="color: #f87171;">Error al conectar con la base de datos.</p>';
-  } else {
-    simsData = data || [];
-    actualizarDesplegablePadres();
-    renderSims();
-  }
+let isListMode = false;
+let searchQuery = "";
+
+// Cargar todo desde Supabase al iniciar
+async function loadAllData() {
+  await Promise.all([
+    fetchSims(),
+    fetchLore(),
+    fetchHouses(),
+    fetchPets()
+  ]);
+  renderAll();
 }
 
-// Rellenar el desplegable para elegir padre/madre en el árbol genealógico
-function actualizarDesplegablePadres() {
-  const select = document.getElementById('parent_id');
-  select.innerHTML = '<option value="">-- Ninguno (Fundador/a) --</option>';
+// FETCH FUNCTIONS (Supabase)
+async function fetchSims() {
+  const { data, error } = await supabase.from('sims').select('*').order('created_at', { ascending: true });
+  if (!error && data) simsData = data;
+}
+
+async function fetchLore() {
+  const { data, error } = await supabase.from('lore_events').select('*').order('created_at', { ascending: true });
+  if (!error && data) extraLore = data;
+}
+
+async function fetchHouses() {
+  const { data, error } = await supabase.from('houses').select('*').order('created_at', { ascending: true });
+  if (!error && data) housesData = data;
+}
+
+async function fetchPets() {
+  const { data, error } = await supabase.from('pets').select('*').order('created_at', { ascending: true });
+  if (!error && data) petsData = data;
+}
+
+// Cambio de Pestañas
+function switchTab(tabId, ev) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  ev.target.classList.add('active');
+}
+
+// Modal Manager
+function openModal(id) {
+  document.getElementById(id).style.display = 'flex';
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function openSimModal(parentId = null) {
+  document.getElementById('simParentId').value = parentId || "";
+  document.getElementById('simForm').reset();
   
+  const select = document.getElementById('simParentSelect');
+  select.innerHTML = '<option value="">-- Ninguno (Fundador Raíz) --</option>';
   simsData.forEach(sim => {
-    const option = document.createElement('option');
-    option.value = sim.id;
-    option.textContent = `${sim.name} (${sim.family || 'Sin familia'})`;
-    select.appendChild(option);
+    select.innerHTML += `<option value="${sim.id}">${sim.name} (${sim.gen})</option>`;
   });
+
+  if (parentId) select.value = parentId;
+  openModal('simModal');
 }
 
-// Pintar las tarjetas de los Sims en pantalla
-function renderSims() {
-  const container = document.getElementById('simsContainer');
-  
-  if (simsData.length === 0) {
-    container.innerHTML = '<p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">Aún no hay Sims guardados. ¡Añade el primero arriba!</p>';
+function openLoreModal() { openModal('loreModal'); }
+function openHouseModal() { openModal('houseModal'); }
+function openPetModal() { openModal('petModal'); }
+
+// Toggle View Mode
+function toggleTreeViewMode() {
+  isListMode = !isListMode;
+  document.getElementById('toggleViewBtn').innerText = isListMode ? "Vista Árbol" : "Vista Lista";
+  renderTree();
+}
+
+// SAVE FUNCTIONS (Supabase)
+async function saveSim(e) {
+  e.preventDefault();
+  const parentSelectVal = document.getElementById('simParentSelect').value;
+
+  const newSim = {
+    parent_id: parentSelectVal || null,
+    name: document.getElementById('simName').value,
+    gen: document.getElementById('simGen').value,
+    traits: document.getElementById('simTraits').value || "Sin rasgos",
+    house: document.getElementById('simHouse').value || "",
+    lore: document.getElementById('simLore').value || ""
+  };
+
+  const { error } = await supabase.from('sims').insert([newSim]);
+  if (error) alert("Error al guardar Sim: " + error.message);
+
+  closeModal('simModal');
+  await fetchSims();
+  renderAll();
+}
+
+async function saveLoreEvent(e) {
+  e.preventDefault();
+  const newLore = {
+    title: document.getElementById('loreTitle').value,
+    sims: document.getElementById('loreSims').value || "Sims de la familia",
+    desc: document.getElementById('loreDesc').value
+  };
+
+  const { error } = await supabase.from('lore_events').insert([newLore]);
+  if (error) alert("Error al guardar Lore: " + error.message);
+
+  closeModal('loreModal');
+  await fetchLore();
+  renderAll();
+}
+
+async function saveHouse(e) {
+  e.preventDefault();
+  const newHouse = {
+    name: document.getElementById('houseName').value,
+    world: document.getElementById('houseWorld').value || "Mundo Sim",
+    desc: document.getElementById('houseDesc').value || ""
+  };
+
+  const { error } = await supabase.from('houses').insert([newHouse]);
+  if (error) alert("Error al guardar casa: " + error.message);
+
+  closeModal('houseModal');
+  await fetchHouses();
+  renderAll();
+}
+
+async function savePet(e) {
+  e.preventDefault();
+  const newPet = {
+    name: document.getElementById('petName').value,
+    meta: document.getElementById('petMeta').value || "Mascota",
+    owner: document.getElementById('petOwner').value || "Familia",
+    desc: document.getElementById('petDesc').value || ""
+  };
+
+  const { error } = await supabase.from('pets').insert([newPet]);
+  if (error) alert("Error al guardar mascota: " + error.message);
+
+  closeModal('petModal');
+  await fetchPets();
+  renderAll();
+}
+
+// DELETE ITEM
+async function deleteItem(type, id) {
+  let table = '';
+  if (type === 'sim') table = 'sims';
+  else if (type === 'lore') table = 'lore_events';
+  else if (type === 'house') table = 'houses';
+  else if (type === 'pet') table = 'pets';
+
+  const { error } = await supabase.from(table).delete().eq('id', id);
+  if (error) alert("Error al eliminar: " + error.message);
+
+  await loadAllData();
+}
+
+// RENDER TREE
+function renderTree() {
+  const container = document.getElementById('treeView');
+  const filteredSims = simsData.filter(s => 
+    s.name.toLowerCase().includes(searchQuery) ||
+    s.traits.toLowerCase().includes(searchQuery)
+  );
+
+  if (filteredSims.length === 0) {
+    container.innerHTML = `<div class="empty-state">No hay Sims creados aún. ¡Añade tu primer fundador!</div>`;
     return;
   }
 
-  container.innerHTML = simsData.map(sim => {
-    const progenitor = sim.parent_id ? simsData.find(s => s.id == sim.parent_id) : null;
-    const nombrePadre = progenitor ? progenitor.name : null;
+  if (isListMode) {
+    let html = '<div class="cards-grid" style="text-align:left;">';
+    filteredSims.forEach(sim => {
+      html += `
+        <div class="info-card">
+          <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
+          <h3>${sim.name}</h3>
+          <div class="meta">${sim.gen} • ${sim.traits}</div>
+          <p>${sim.lore || "Sin lore registrado."}</p>
+          ${sim.house ? `<span class="card-footer-tag">🏡 ${sim.house}</span>` : ''}
+          <div style="margin-top:8px;">
+            <button class="mini-btn" onclick="openSimModal('${sim.id}')">+ Añadir Descendiente</button>
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+    return;
+  }
 
-    return `
-      <div class="sim-card">
-        <img src="${sim.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'}" alt="${sim.name}" onerror="this.src='https://via.placeholder.com/90?text=Sim'">
-        <div class="sim-name">${sim.name}</div>
-        <div class="sim-meta">${sim.family || 'Sin familia'} ${sim.generation ? '• ' + sim.generation : ''}</div>
-        
-        ${sim.traits ? `<div class="sim-badge">✨ ${sim.traits}</div>` : ''}
-        ${nombrePadre ? `<div style="font-size: 0.75rem; color: var(--accent-lavender); margin-bottom: 4px;">🧬 Descendiente de: ${nombrePadre}</div>` : ''}
-        
-        ${sim.lore ? `<div class="sim-lore">📖 ${sim.lore}</div>` : ''}
-        ${sim.extra_info ? `<div class="sim-extra">📌 <strong>Extra:</strong> ${sim.extra_info}</div>` : ''}
+  function buildBranch(parentId) {
+    const children = filteredSims.filter(s => s.parent_id === parentId);
+    if (children.length === 0) return '';
+
+    let branchHtml = '<ul>';
+    children.forEach(child => {
+      branchHtml += `
+        <li>
+          <div class="sim-tree-card">
+            <div class="sim-tree-header">
+              <h4>${child.name}</h4>
+              <span class="gen-badge">${child.gen}</span>
+            </div>
+            <div class="sim-tree-meta">${child.traits}</div>
+            ${child.house ? `<div style="font-size:0.75rem; color:var(--text-muted);">🏡 ${child.house}</div>` : ''}
+            <div class="sim-card-actions">
+              <button class="mini-btn" onclick="openSimModal('${child.id}')">+ Descendiente</button>
+              <button class="mini-btn" onclick="deleteItem('sim', '${child.id}')">Eliminar</button>
+            </div>
+          </div>
+          ${buildBranch(child.id)}
+        </li>
+      `;
+    });
+    branchHtml += '</ul>';
+    return branchHtml;
+  }
+
+  const roots = filteredSims.filter(s => !s.parent_id);
+  let treeHtml = '<ul>';
+  
+  if (roots.length > 0) {
+    roots.forEach(root => {
+      treeHtml += `
+        <li>
+          <div class="sim-tree-card">
+            <div class="sim-tree-header">
+              <h4>${root.name}</h4>
+              <span class="gen-badge">${root.gen}</span>
+            </div>
+            <div class="sim-tree-meta">${root.traits}</div>
+            ${root.house ? `<div style="font-size:0.75rem; color:var(--text-muted);">🏡 ${root.house}</div>` : ''}
+            <div class="sim-card-actions">
+              <button class="mini-btn" onclick="openSimModal('${root.id}')">+ Descendiente</button>
+              <button class="mini-btn" onclick="deleteItem('sim', '${root.id}')">Eliminar</button>
+            </div>
+          </div>
+          ${buildBranch(root.id)}
+        </li>
+      `;
+    });
+  } else {
+    filteredSims.forEach(sim => {
+      treeHtml += `
+        <li>
+          <div class="sim-tree-card">
+            <h4>${sim.name}</h4>
+            <div class="sim-tree-meta">${sim.gen}</div>
+          </div>
+        </li>
+      `;
+    });
+  }
+  treeHtml += '</ul>';
+  container.innerHTML = treeHtml;
+}
+
+// RENDER LORE
+function renderLore() {
+  const loreGrid = document.getElementById('loreGrid');
+  const filteredSims = simsData.filter(s => 
+    s.name.toLowerCase().includes(searchQuery) ||
+    (s.lore && s.lore.toLowerCase().includes(searchQuery))
+  );
+
+  const filteredExtraLore = extraLore.filter(l => 
+    l.title.toLowerCase().includes(searchQuery) ||
+    l.desc.toLowerCase().includes(searchQuery)
+  );
+
+  let html = '';
+
+  filteredSims.forEach(sim => {
+    html += `
+      <div class="info-card">
+        <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
+        <h3>${sim.name}</h3>
+        <div class="meta">${sim.gen} • ${sim.traits}</div>
+        <p>${sim.lore ? sim.lore : "Sin biografía escrita aún."}</p>
+        ${sim.house ? `<span class="card-footer-tag">🏡 ${sim.house}</span>` : ''}
       </div>
     `;
-  }).join('');
+  });
+
+  filteredExtraLore.forEach(ev => {
+    html += `
+      <div class="info-card blue-theme">
+        <button class="delete-btn" onclick="deleteItem('lore', '${ev.id}')">✕</button>
+        <h3>${ev.title}</h3>
+        <div class="meta">Involucrados: ${ev.sims}</div>
+        <p>${ev.desc}</p>
+      </div>
+    `;
+  });
+
+  if (!html) html = `<div class="empty-state">No hay eventos de historia o biografías de Sims registradas.</div>`;
+  loreGrid.innerHTML = html;
 }
 
-// Insertar un nuevo Sim en Supabase al enviar el formulario
-async function saveSim(e) {
-  e.preventDefault();
+// RENDER HOUSES
+function renderHouses() {
+  const housesGrid = document.getElementById('casasGrid');
+  const filtered = housesData.filter(h => 
+    h.name.toLowerCase().includes(searchQuery) ||
+    h.world.toLowerCase().includes(searchQuery)
+  );
 
-  const nuevoSim = {
-    name: document.getElementById('name').value,
-    image_url: document.getElementById('image_url').value || null,
-    family: document.getElementById('family').value || null,
-    parent_id: document.getElementById('parent_id').value || null,
-    generation: document.getElementById('generation').value || null,
-    traits: document.getElementById('traits').value || null,
-    lore: document.getElementById('lore').value || null,
-    extra_info: document.getElementById('extra_info').value || null
-  };
-
-  const { error } = await _supabase.from('sims').insert([nuevoSim]);
-
-  if (error) {
-    alert('Hubo un error al guardar en la nube: ' + error.message);
-  } else {
-    document.getElementById('simForm').reset();
-    await cargarSims();
+  if (filtered.length === 0) {
+    housesGrid.innerHTML = `<div class="empty-state">No se han registrado residencias o solares.</div>`;
+    return;
   }
+
+  housesGrid.innerHTML = filtered.map(h => `
+    <div class="info-card pink-theme">
+      <button class="delete-btn" onclick="deleteItem('house', '${h.id}')">✕</button>
+      <h3>${h.name}</h3>
+      <div class="meta">📍 Mundo: ${h.world}</div>
+      <p>${h.desc || "Sin descripción adicional."}</p>
+    </div>
+  `).join('');
 }
 
-// Event Listeners y arranque
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('simForm').addEventListener('submit', saveSim);
-  cargarSims();
-});
+// RENDER PETS
+function renderPets() {
+  const mascotasGrid = document.getElementById('mascotasGrid');
+  const filtered = petsData.filter(p => 
+    p.name.toLowerCase().includes(searchQuery) ||
+    p.owner.toLowerCase().includes(searchQuery)
+  );
+
+  if (filtered.length === 0) {
+    mascotasGrid.innerHTML = `<div class="empty-state">No hay mascotas registradas en el legado.</div>`;
+    return;
+  }
+
+  mascotasGrid.innerHTML = filtered.map(p => `
+    <div class="info-card blue-theme">
+      <button class="delete-btn" onclick="deleteItem('pet', '${p.id}')">✕</button>
+      <h3>🐾 ${p.name}</h3>
+      <div class="meta">${p.meta} • Dueño: ${p.owner}</div>
+      <p>${p.desc || "Sin notas adicionales."}</p>
+    </div>
+  `).join('');
+}
+
+// STATS & SEARCH
+function updateStats() {
+  document.getElementById('statSims').innerText = simsData.length;
+  document.getElementById('statLore').innerText = simsData.filter(s => s.lore).length + extraLore.length;
+  document.getElementById('statHouses').innerText = housesData.length;
+  document.getElementById('statPets').innerText = petsData.length;
+}
+
+function handleSearch() {
+  searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+  renderAll();
+}
+
+function renderAll() {
+  renderTree();
+  renderLore();
+  renderHouses();
+  renderPets();
+  updateStats();
+}
+
+// Cargar todo al inicio
+loadAllData();
