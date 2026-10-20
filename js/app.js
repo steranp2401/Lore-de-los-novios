@@ -1,6 +1,6 @@
-// Configuración de Supabase (Sustituye por tus claves)
-const SUPABASE_URL = "TU_SUPABASE_URL_AQUI";
-const SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY_AQUI";
+// Configuración Real de Supabase
+const SUPABASE_URL = "https://sdmlcxqlrywncxtezjsn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkbWxjeHFscnl3bmN4dGV6anNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0M1Y2NzEsImV4cCI6MjEwNzk4NzY3MX0.R-euYD3pKFw8OAN5DX65pLqORtM3co-YTDLN5KdQHPY";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -14,85 +14,98 @@ let searchQuery = "";
 
 // Cargar todo desde Supabase al iniciar
 async function loadAllData() {
-  await Promise.all([
-    fetchSims(),
-    fetchLore(),
-    fetchHouses(),
-    fetchPets()
-  ]);
-  renderAll();
+  try {
+    await Promise.all([
+      fetchSims(),
+      fetchLore(),
+      fetchHouses(),
+      fetchPets()
+    ]);
+  } catch (err) {
+    console.error("Error cargando datos de Supabase:", err);
+  } finally {
+    renderAll();
+  }
 }
 
 // FETCH FUNCTIONS (Supabase)
 async function fetchSims() {
-  const { data, error } = await supabase.from('sims').select('*').order('created_at', { ascending: true });
+  const { data, error } = await supabase.from('sims').select('*').order('id', { ascending: true });
   if (!error && data) simsData = data;
 }
 
 async function fetchLore() {
-  const { data, error } = await supabase.from('lore_events').select('*').order('created_at', { ascending: true });
+  const { data, error } = await supabase.from('lore_events').select('*').order('id', { ascending: true });
   if (!error && data) extraLore = data;
 }
 
 async function fetchHouses() {
-  const { data, error } = await supabase.from('houses').select('*').order('created_at', { ascending: true });
+  const { data, error } = await supabase.from('houses').select('*').order('id', { ascending: true });
   if (!error && data) housesData = data;
 }
 
 async function fetchPets() {
-  const { data, error } = await supabase.from('pets').select('*').order('created_at', { ascending: true });
+  const { data, error } = await supabase.from('pets').select('*').order('id', { ascending: true });
   if (!error && data) petsData = data;
 }
 
 // Cambio de Pestañas
-function switchTab(tabId, ev) {
+window.switchTab = function(tabId, ev) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
-  ev.target.classList.add('active');
-}
+  if (ev && ev.target) {
+    ev.target.classList.add('active');
+  }
+};
 
 // Modal Manager
-function openModal(id) {
-  document.getElementById(id).style.display = 'flex';
-}
+window.openModal = function(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.style.display = 'flex';
+};
 
-function closeModal(id) {
-  document.getElementById(id).style.display = 'none';
-}
+window.closeModal = function(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.style.display = 'none';
+};
 
-function openSimModal(parentId = null) {
-  document.getElementById('simParentId').value = parentId || "";
-  document.getElementById('simForm').reset();
+window.openSimModal = function(parentId = null) {
+  const parentIdInput = document.getElementById('simParentId');
+  const simForm = document.getElementById('simForm');
+  if (parentIdInput) parentIdInput.value = parentId || "";
+  if (simForm) simForm.reset();
   
   const select = document.getElementById('simParentSelect');
-  select.innerHTML = '<option value="">-- Ninguno (Fundador Raíz) --</option>';
-  simsData.forEach(sim => {
-    select.innerHTML += `<option value="${sim.id}">${sim.name} (${sim.gen})</option>`;
-  });
+  if (select) {
+    select.innerHTML = '<option value="">-- Ninguno (Fundador Raíz) --</option>';
+    simsData.forEach(sim => {
+      select.innerHTML += `<option value="${sim.id}">${sim.name} (${sim.gen || ''})</option>`;
+    });
+    if (parentId) select.value = parentId;
+  }
+  window.openModal('simModal');
+};
 
-  if (parentId) select.value = parentId;
-  openModal('simModal');
-}
-
-function openLoreModal() { openModal('loreModal'); }
-function openHouseModal() { openModal('houseModal'); }
-function openPetModal() { openModal('petModal'); }
+window.openLoreModal = function() { window.openModal('loreModal'); };
+window.openHouseModal = function() { window.openModal('houseModal'); };
+window.openPetModal = function() { window.openModal('petModal'); };
 
 // Toggle View Mode
-function toggleTreeViewMode() {
+window.toggleTreeViewMode = function() {
   isListMode = !isListMode;
-  document.getElementById('toggleViewBtn').innerText = isListMode ? "Vista Árbol" : "Vista Lista";
+  const btn = document.getElementById('toggleViewBtn');
+  if (btn) btn.innerText = isListMode ? "Vista Árbol" : "Vista Lista";
   renderTree();
-}
+};
 
 // SAVE FUNCTIONS (Supabase)
-async function saveSim(e) {
+window.saveSim = async function(e) {
   e.preventDefault();
   const parentSelectVal = document.getElementById('simParentSelect').value;
 
   const newSim = {
-    parent_id: parentSelectVal || null,
+    parent_id: parentSelectVal ? parseInt(parentSelectVal) : null,
     name: document.getElementById('simName').value,
     gen: document.getElementById('simGen').value,
     traits: document.getElementById('simTraits').value || "Sin rasgos",
@@ -101,14 +114,16 @@ async function saveSim(e) {
   };
 
   const { error } = await supabase.from('sims').insert([newSim]);
-  if (error) alert("Error al guardar Sim: " + error.message);
+  if (error) {
+    alert("Error al guardar Sim: " + error.message);
+  } else {
+    window.closeModal('simModal');
+    await fetchSims();
+    renderAll();
+  }
+};
 
-  closeModal('simModal');
-  await fetchSims();
-  renderAll();
-}
-
-async function saveLoreEvent(e) {
+window.saveLoreEvent = async function(e) {
   e.preventDefault();
   const newLore = {
     title: document.getElementById('loreTitle').value,
@@ -117,14 +132,16 @@ async function saveLoreEvent(e) {
   };
 
   const { error } = await supabase.from('lore_events').insert([newLore]);
-  if (error) alert("Error al guardar Lore: " + error.message);
+  if (error) {
+    alert("Error al guardar Lore: " + error.message);
+  } else {
+    window.closeModal('loreModal');
+    await fetchLore();
+    renderAll();
+  }
+};
 
-  closeModal('loreModal');
-  await fetchLore();
-  renderAll();
-}
-
-async function saveHouse(e) {
+window.saveHouse = async function(e) {
   e.preventDefault();
   const newHouse = {
     name: document.getElementById('houseName').value,
@@ -133,14 +150,16 @@ async function saveHouse(e) {
   };
 
   const { error } = await supabase.from('houses').insert([newHouse]);
-  if (error) alert("Error al guardar casa: " + error.message);
+  if (error) {
+    alert("Error al guardar casa: " + error.message);
+  } else {
+    window.closeModal('houseModal');
+    await fetchHouses();
+    renderAll();
+  }
+};
 
-  closeModal('houseModal');
-  await fetchHouses();
-  renderAll();
-}
-
-async function savePet(e) {
+window.savePet = async function(e) {
   e.preventDefault();
   const newPet = {
     name: document.getElementById('petName').value,
@@ -150,15 +169,17 @@ async function savePet(e) {
   };
 
   const { error } = await supabase.from('pets').insert([newPet]);
-  if (error) alert("Error al guardar mascota: " + error.message);
-
-  closeModal('petModal');
-  await fetchPets();
-  renderAll();
-}
+  if (error) {
+    alert("Error al guardar mascota: " + error.message);
+  } else {
+    window.closeModal('petModal');
+    await fetchPets();
+    renderAll();
+  }
+};
 
 // DELETE ITEM
-async function deleteItem(type, id) {
+window.deleteItem = async function(type, id) {
   let table = '';
   if (type === 'sim') table = 'sims';
   else if (type === 'lore') table = 'lore_events';
@@ -169,14 +190,16 @@ async function deleteItem(type, id) {
   if (error) alert("Error al eliminar: " + error.message);
 
   await loadAllData();
-}
+};
 
 // RENDER TREE
 function renderTree() {
   const container = document.getElementById('treeView');
+  if (!container) return;
+
   const filteredSims = simsData.filter(s => 
-    s.name.toLowerCase().includes(searchQuery) ||
-    s.traits.toLowerCase().includes(searchQuery)
+    (s.name && s.name.toLowerCase().includes(searchQuery)) ||
+    (s.traits && s.traits.toLowerCase().includes(searchQuery))
   );
 
   if (filteredSims.length === 0) {
@@ -191,7 +214,7 @@ function renderTree() {
         <div class="info-card">
           <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
           <h3>${sim.name}</h3>
-          <div class="meta">${sim.gen} • ${sim.traits}</div>
+          <div class="meta">${sim.gen || ''} • ${sim.traits || ''}</div>
           <p>${sim.lore || "Sin lore registrado."}</p>
           ${sim.house ? `<span class="card-footer-tag">🏡 ${sim.house}</span>` : ''}
           <div style="margin-top:8px;">
@@ -216,9 +239,9 @@ function renderTree() {
           <div class="sim-tree-card">
             <div class="sim-tree-header">
               <h4>${child.name}</h4>
-              <span class="gen-badge">${child.gen}</span>
+              <span class="gen-badge">${child.gen || ''}</span>
             </div>
-            <div class="sim-tree-meta">${child.traits}</div>
+            <div class="sim-tree-meta">${child.traits || ''}</div>
             ${child.house ? `<div style="font-size:0.75rem; color:var(--text-muted);">🏡 ${child.house}</div>` : ''}
             <div class="sim-card-actions">
               <button class="mini-btn" onclick="openSimModal('${child.id}')">+ Descendiente</button>
@@ -243,9 +266,9 @@ function renderTree() {
           <div class="sim-tree-card">
             <div class="sim-tree-header">
               <h4>${root.name}</h4>
-              <span class="gen-badge">${root.gen}</span>
+              <span class="gen-badge">${root.gen || ''}</span>
             </div>
-            <div class="sim-tree-meta">${root.traits}</div>
+            <div class="sim-tree-meta">${root.traits || ''}</div>
             ${root.house ? `<div style="font-size:0.75rem; color:var(--text-muted);">🏡 ${root.house}</div>` : ''}
             <div class="sim-card-actions">
               <button class="mini-btn" onclick="openSimModal('${root.id}')">+ Descendiente</button>
@@ -262,7 +285,7 @@ function renderTree() {
         <li>
           <div class="sim-tree-card">
             <h4>${sim.name}</h4>
-            <div class="sim-tree-meta">${sim.gen}</div>
+            <div class="sim-tree-meta">${sim.gen || ''}</div>
           </div>
         </li>
       `;
@@ -275,14 +298,16 @@ function renderTree() {
 // RENDER LORE
 function renderLore() {
   const loreGrid = document.getElementById('loreGrid');
+  if (!loreGrid) return;
+
   const filteredSims = simsData.filter(s => 
-    s.name.toLowerCase().includes(searchQuery) ||
+    (s.name && s.name.toLowerCase().includes(searchQuery)) ||
     (s.lore && s.lore.toLowerCase().includes(searchQuery))
   );
 
   const filteredExtraLore = extraLore.filter(l => 
-    l.title.toLowerCase().includes(searchQuery) ||
-    l.desc.toLowerCase().includes(searchQuery)
+    (l.title && l.title.toLowerCase().includes(searchQuery)) ||
+    (l.desc && l.desc.toLowerCase().includes(searchQuery))
   );
 
   let html = '';
@@ -292,7 +317,7 @@ function renderLore() {
       <div class="info-card">
         <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
         <h3>${sim.name}</h3>
-        <div class="meta">${sim.gen} • ${sim.traits}</div>
+        <div class="meta">${sim.gen || ''} • ${sim.traits || ''}</div>
         <p>${sim.lore ? sim.lore : "Sin biografía escrita aún."}</p>
         ${sim.house ? `<span class="card-footer-tag">🏡 ${sim.house}</span>` : ''}
       </div>
@@ -304,7 +329,7 @@ function renderLore() {
       <div class="info-card blue-theme">
         <button class="delete-btn" onclick="deleteItem('lore', '${ev.id}')">✕</button>
         <h3>${ev.title}</h3>
-        <div class="meta">Involucrados: ${ev.sims}</div>
+        <div class="meta">Involucrados: ${ev.sims || ''}</div>
         <p>${ev.desc}</p>
       </div>
     `;
@@ -317,9 +342,11 @@ function renderLore() {
 // RENDER HOUSES
 function renderHouses() {
   const housesGrid = document.getElementById('casasGrid');
+  if (!housesGrid) return;
+
   const filtered = housesData.filter(h => 
-    h.name.toLowerCase().includes(searchQuery) ||
-    h.world.toLowerCase().includes(searchQuery)
+    (h.name && h.name.toLowerCase().includes(searchQuery)) ||
+    (h.world && h.world.toLowerCase().includes(searchQuery))
   );
 
   if (filtered.length === 0) {
@@ -340,9 +367,11 @@ function renderHouses() {
 // RENDER PETS
 function renderPets() {
   const mascotasGrid = document.getElementById('mascotasGrid');
+  if (!mascotasGrid) return;
+
   const filtered = petsData.filter(p => 
-    p.name.toLowerCase().includes(searchQuery) ||
-    p.owner.toLowerCase().includes(searchQuery)
+    (p.name && p.name.toLowerCase().includes(searchQuery)) ||
+    (p.owner && p.owner.toLowerCase().includes(searchQuery))
   );
 
   if (filtered.length === 0) {
@@ -354,7 +383,7 @@ function renderPets() {
     <div class="info-card blue-theme">
       <button class="delete-btn" onclick="deleteItem('pet', '${p.id}')">✕</button>
       <h3>🐾 ${p.name}</h3>
-      <div class="meta">${p.meta} • Dueño: ${p.owner}</div>
+      <div class="meta">${p.meta || ''} • Dueño: ${p.owner || ''}</div>
       <p>${p.desc || "Sin notas adicionales."}</p>
     </div>
   `).join('');
@@ -362,16 +391,24 @@ function renderPets() {
 
 // STATS & SEARCH
 function updateStats() {
-  document.getElementById('statSims').innerText = simsData.length;
-  document.getElementById('statLore').innerText = simsData.filter(s => s.lore).length + extraLore.length;
-  document.getElementById('statHouses').innerText = housesData.length;
-  document.getElementById('statPets').innerText = petsData.length;
+  const elSims = document.getElementById('statSims');
+  const elLore = document.getElementById('statLore');
+  const elHouses = document.getElementById('statHouses');
+  const elPets = document.getElementById('statPets');
+
+  if (elSims) elSims.innerText = simsData.length;
+  if (elLore) elLore.innerText = simsData.filter(s => s.lore).length + extraLore.length;
+  if (elHouses) elHouses.innerText = housesData.length;
+  if (elPets) elPets.innerText = petsData.length;
 }
 
-function handleSearch() {
-  searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
-  renderAll();
-}
+window.handleSearch = function() {
+  const input = document.getElementById('searchInput');
+  if (input) {
+    searchQuery = input.value.toLowerCase().trim();
+    renderAll();
+  }
+};
 
 function renderAll() {
   renderTree();
@@ -382,4 +419,4 @@ function renderAll() {
 }
 
 // Cargar todo al inicio
-loadAllData();
+document.addEventListener('DOMContentLoaded', loadAllData);
