@@ -2,8 +2,8 @@
 const SUPABASE_URL = "https://sdmlcxqlrywncxtezjsn.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkbWxjeHFscnl3bmN4dGV6anNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0M1Y2NzEsImV4cCI6MjEwNzk4NzY3MX0.R-euYD3pKFw8OAN5DX65pLqORtM3co-YTDLN5KdQHPY";
 
-// Inicialización única de cliente Supabase
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Usamos 'db' para evitar el conflicto de nombres con la librería global
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let simsData = [];
 let extraLore = [];
@@ -31,22 +31,22 @@ async function loadAllData() {
 
 // FETCH FUNCTIONS (Supabase)
 async function fetchSims() {
-  const { data, error } = await supabaseClient.from('sims').select('*').order('id', { ascending: true });
+  const { data, error } = await db.from('sims').select('*').order('id', { ascending: true });
   if (!error && data) simsData = data;
 }
 
 async function fetchLore() {
-  const { data, error } = await supabaseClient.from('lore_events').select('*').order('id', { ascending: true });
+  const { data, error } = await db.from('lore_events').select('*').order('id', { ascending: true });
   if (!error && data) extraLore = data;
 }
 
 async function fetchHouses() {
-  const { data, error } = await supabaseClient.from('houses').select('*').order('id', { ascending: true });
+  const { data, error } = await db.from('houses').select('*').order('id', { ascending: true });
   if (!error && data) housesData = data;
 }
 
 async function fetchPets() {
-  const { data, error } = await supabaseClient.from('pets').select('*').order('id', { ascending: true });
+  const { data, error } = await db.from('pets').select('*').order('id', { ascending: true });
   if (!error && data) petsData = data;
 }
 
@@ -117,7 +117,7 @@ window.saveSim = async function(e) {
     extra_info: ""
   };
 
-  const { error } = await supabaseClient.from('sims').insert([newSim]);
+  const { error } = await db.from('sims').insert([newSim]);
   if (error) {
     alert("Error al guardar Sim: " + error.message);
   } else {
@@ -135,7 +135,7 @@ window.saveLoreEvent = async function(e) {
     desc: document.getElementById('loreDesc').value
   };
 
-  const { error } = await supabaseClient.from('lore_events').insert([newLore]);
+  const { error } = await db.from('lore_events').insert([newLore]);
   if (error) {
     alert("Error al guardar Lore: " + error.message);
   } else {
@@ -153,7 +153,7 @@ window.saveHouse = async function(e) {
     desc: document.getElementById('houseDesc').value || ""
   };
 
-  const { error } = await supabaseClient.from('houses').insert([newHouse]);
+  const { error } = await db.from('houses').insert([newHouse]);
   if (error) {
     alert("Error al guardar casa: " + error.message);
   } else {
@@ -172,7 +172,7 @@ window.savePet = async function(e) {
     desc: document.getElementById('petDesc').value || ""
   };
 
-  const { error } = await supabaseClient.from('pets').insert([newPet]);
+  const { error } = await db.from('pets').insert([newPet]);
   if (error) {
     alert("Error al guardar mascota: " + error.message);
   } else {
@@ -190,7 +190,7 @@ window.deleteItem = async function(type, id) {
   else if (type === 'house') table = 'houses';
   else if (type === 'pet') table = 'pets';
 
-  const { error } = await supabaseClient.from(table).delete().eq('id', id);
+  const { error } = await db.from(table).delete().eq('id', id);
   if (error) alert("Error al eliminar: " + error.message);
 
   await loadAllData();
