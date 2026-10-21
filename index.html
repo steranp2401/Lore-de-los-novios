@@ -7,13 +7,13 @@
   <link rel="stylesheet" href="css/styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=MedievalSharp&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- SDK de Supabase v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-  <!-- HEADER ÉPICO Y ANCHO -->
+  <!-- HEADER ÉPICO -->
   <header>
     <div class="brand">
       <div class="plumbob-badge">
@@ -25,9 +25,9 @@
       </div>
     </div>
 
-    <!-- ORBE / AVATAR CON BRILLO MÁGICO (FONDO CON CRISTAL LILA) -->
+    <!-- CÍRCULO DEL AVATAR (EN BLANCO PARA TU FOTO) -->
     <div class="header-avatar" id="avatarContainer">
-      <span class="header-avatar-placeholder">🔮</span>
+      <!-- Pon aquí tu imagen cuando la tengas: <img src="ruta/de/tu/foto.png" alt="Familia"> -->
     </div>
   </header>
 
@@ -58,7 +58,7 @@
   <!-- DISPOSICIÓN PRINCIPAL -->
   <div class="main-layout">
 
-    <!-- COLUMNA IZQUIERDA: TARJETAS DE NAVEGACIÓN -->
+    <!-- COLUMNA IZQUIERDA: 4 TARJETAS DE NAVEGACIÓN -->
     <nav>
       <button class="nav-card active" onclick="switchTab('arbol', event)" id="btn-arbol">
         <div class="card-icon-box">👥</div>
@@ -101,7 +101,7 @@
       </button>
     </nav>
 
-    <!-- COLUMNA DERECHA: PESTAÑAS DE CONTENIDO -->
+    <!-- COLUMNA DERECHA: PESTAÑAS Y CONTENIDO -->
     <main>
       <!-- ÁRBOL GENEALÓGICO -->
       <section id="arbol" class="tab-content active">
