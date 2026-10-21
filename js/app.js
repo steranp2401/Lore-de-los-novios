@@ -1,6 +1,6 @@
 // Configuración Real de Supabase
 const SUPABASE_URL = "https://sdmlcxqlrywncxtezjsn.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkbWxjeHFscnl3bmN4dGV6anNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0M1Y2NzEsImV4cCI6MjEwNzk4NzY3MX0.R-euYD3pKFw8OAN5DX65pLqORtM3co-YTDLN5KdQHPY";
+const SUPABASE_ANON_KEY = "sb_publishable_vVuqmA40xDlawc6AhCT1TQ_yZ-j2wz7";
 
 // Usamos 'db' para evitar el conflicto de nombres con la librería global
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
