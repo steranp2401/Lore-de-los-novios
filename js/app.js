@@ -52,7 +52,6 @@ window.switchTab = function(tabId, ev) {
 window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; };
 window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; };
 
-// --- SIM MODAL (PADRE Y MADRE INDEPENDIENTES) ---
 window.openSimModal = function(parentId = null, editId = null) {
   document.getElementById('simForm').reset();
   document.getElementById('simId').value = "";
@@ -69,7 +68,7 @@ window.openSimModal = function(parentId = null, editId = null) {
   });
 
   if (parentId) {
-    fatherSelect.value = parentId; // Por defecto asigna como padre si se pulsa en un nodo
+    fatherSelect.value = parentId;
   }
 
   if (editId) {
@@ -132,7 +131,6 @@ window.saveSim = async function(e) {
   }
 };
 
-// --- LORE MODAL ---
 window.openLoreModal = function(editId = null) {
   document.getElementById('loreId').value = "";
   document.getElementById('loreTitle').value = "";
@@ -177,7 +175,6 @@ window.saveLoreEvent = async function(e) {
   }
 };
 
-// --- HOUSE MODAL ---
 window.openHouseModal = function(editId = null) {
   document.getElementById('houseId').value = "";
   document.getElementById('houseName').value = "";
@@ -225,7 +222,6 @@ window.saveHouse = async function(e) {
   }
 };
 
-// --- PET MODAL ---
 window.openPetModal = function(parentId = null, editId = null) {
   document.getElementById('petId').value = "";
   document.getElementById('petName').value = "";
@@ -312,7 +308,6 @@ window.handleFamilyFilter = function() {
   renderTree();
 };
 
-// --- RENDER ÁRBOL CON ASCENDENCIA DE PADRE O MADRE ---
 function renderTree() {
   const container = document.getElementById('treeView');
   if (!container) return;
@@ -344,8 +339,8 @@ function renderTree() {
             <div class="sim-avatar">${avatarContent}</div>
             <h4>${child.name}</h4>
             <div class="sim-tree-meta">${child.generation || ''}</div>
-            ${child.spouse ? `<div style="font-size:0.75rem; color:#7c52f6; font-weight:600;">💍 ${child.spouse}</div>` : ''}
-            ${child.traits ? `<div style="font-size:0.72rem; color:#6e6592; margin-top:2px;">${child.traits}</div>` : ''}
+            ${child.spouse ? `<div style="font-size:0.72rem; color:#7c52f6; font-weight:600;">💍 ${child.spouse}</div>` : ''}
+            ${child.traits ? `<div style="font-size:0.7rem; color:#6e6592; margin-top:2px;">${child.traits}</div>` : ''}
             <div class="card-actions-bottom">
               <button class="mini-btn" onclick="openSimModal(null, '${child.id}')">Editar</button>
               <button class="mini-btn" onclick="openSimModal('${child.id}')">+ Hijo</button>
@@ -372,8 +367,8 @@ function renderTree() {
             <div class="sim-avatar">${avatarContent}</div>
             <h4>${root.name}</h4>
             <div class="sim-tree-meta">${root.generation || ''}</div>
-            ${root.spouse ? `<div style="font-size:0.75rem; color:#7c52f6; font-weight:600;">💍 ${root.spouse}</div>` : ''}
-            ${root.traits ? `<div style="font-size:0.72rem; color:#6e6592; margin-top:2px;">${root.traits}</div>` : ''}
+            ${root.spouse ? `<div style="font-size:0.72rem; color:#7c52f6; font-weight:600;">💍 ${root.spouse}</div>` : ''}
+            ${root.traits ? `<div style="font-size:0.7rem; color:#6e6592; margin-top:2px;">${root.traits}</div>` : ''}
             <div class="card-actions-bottom">
               <button class="mini-btn" onclick="openSimModal(null, '${root.id}')">Editar</button>
               <button class="mini-btn" onclick="openSimModal('${root.id}')">+ Hijo</button>
@@ -403,7 +398,7 @@ function renderPetTree() {
   );
 
   if (filteredPets.length === 0) {
-    container.innerHTML = `<div style="padding:20px; color:#6e6592; font-size:0.85rem;">No hay linaje de mascotas registrado.</div>`;
+    container.innerHTML = `<div style="padding:15px; color:#6e6592; font-size:0.8rem;">No hay linaje de mascotas registrado.</div>`;
     return;
   }
 
@@ -416,7 +411,7 @@ function renderPetTree() {
       const avatarContent = child.image_url ? `<img src="${child.image_url}" alt="Mascota">` : `🐾`;
       branchHtml += `
         <li>
-          <div class="sim-tree-card" style="width:170px;">
+          <div class="sim-tree-card" style="width:140px;">
             <div class="sim-avatar">${avatarContent}</div>
             <h4>${child.name}</h4>
             <div class="sim-tree-meta">${child.meta || ''}</div>
@@ -439,7 +434,7 @@ function renderPetTree() {
     const avatarContent = root.image_url ? `<img src="${root.image_url}" alt="Mascota">` : `🐾`;
     treeHtml += `
       <li>
-        <div class="sim-tree-card" style="width:170px;">
+        <div class="sim-tree-card" style="width:140px;">
           <div class="sim-avatar">${avatarContent}</div>
           <h4>${root.name}</h4>
           <div class="sim-tree-meta">${root.meta || ''}</div>
@@ -466,8 +461,8 @@ function renderLore() {
       <div class="info-card">
         <button class="delete-btn" onclick="deleteItem('lore', '${ev.id}')">✕</button>
         <h3>📖 ${ev.title}</h3>
-        <div class="meta" style="color:#7c52f6; font-size:0.8rem;">Sims: ${ev.sims || ''}</div>
-        <p>${ev.desc}</p>
+        <div class="meta" style="color:#7c52f6; font-size:0.78rem;">Sims: ${ev.sims || ''}</div>
+        <p style="font-size:0.85rem;">${ev.desc}</p>
         <div class="card-actions-bottom">
           <button class="mini-btn" onclick="openLoreModal('${ev.id}')">Editar Capítulo</button>
         </div>
@@ -489,9 +484,9 @@ function renderHouses() {
       <div class="info-card">
         <button class="delete-btn" onclick="deleteItem('house', '${h.id}')">✕</button>
         <h3>🏰 ${h.name}</h3>
-        <div class="meta" style="font-size:0.8rem;">📍 Mundo: ${h.world}</div>
-        <div class="meta" style="color:#7c52f6; font-size:0.8rem;">👥 Residentes: ${h.sims || 'Ninguno'}</div>
-        <p>${h.desc || "Sin notas."}</p>
+        <div class="meta" style="font-size:0.78rem;">📍 Mundo: ${h.world}</div>
+        <div class="meta" style="color:#7c52f6; font-size:0.78rem;">👥 Residentes: ${h.sims || 'Ninguno'}</div>
+        <p style="font-size:0.85rem;">${h.desc || "Sin notas."}</p>
         <div class="card-actions-bottom">
           <button class="mini-btn" onclick="openHouseModal('${h.id}')">Editar Residencia</button>
         </div>
@@ -514,8 +509,8 @@ function renderPets() {
       <div class="info-card">
         <button class="delete-btn" onclick="deleteItem('pet', '${p.id}')">✕</button>
         <h3>🐾 ${p.name}</h3>
-        <div class="meta" style="font-size:0.8rem;">${p.meta || ''} • Dueño: ${p.owner || ''}</div>
-        <p>${p.desc || "Sin notas."}</p>
+        <div class="meta" style="font-size:0.78rem;">${p.meta || ''} • Dueño: ${p.owner || ''}</div>
+        <p style="font-size:0.85rem;">${p.desc || "Sin notas."}</p>
         <div class="card-actions-bottom">
           <button class="mini-btn" onclick="openPetModal(null, '${p.id}')">Editar Mascota</button>
         </div>
