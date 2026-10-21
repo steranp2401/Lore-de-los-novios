@@ -7,13 +7,13 @@
   <link rel="stylesheet" href="css/styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=MedievalSharp&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Fondamento:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- SDK de Supabase v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-  <!-- HEADER ÉPICO -->
+  <!-- HEADER -->
   <header>
     <div class="brand">
       <div class="plumbob-badge">
@@ -25,17 +25,15 @@
       </div>
     </div>
 
-    <!-- CÍRCULO DEL AVATAR (EN BLANCO PARA TU FOTO) -->
-    <div class="header-avatar" id="avatarContainer">
-      <!-- Pon aquí tu imagen cuando la tengas: <img src="ruta/de/tu/foto.png" alt="Familia"> -->
-    </div>
+    <!-- AVATAR CENTRADO TOTALMENTE VACÍO PARA TU FOTO -->
+    <div class="header-avatar" id="avatarContainer"></div>
   </header>
 
-  <!-- SECCIÓN HERO CON DESTELLOS MÁGICOS -->
+  <!-- SECCIÓN HERO CON SOLO LOS DESTELLOS LATERALES -->
   <section class="hero">
-    <span class="hero-sparkle-1">✨</span>
-    <span class="hero-sparkle-2">🌙</span>
-    <span class="hero-sparkle-3">🔮</span>
+    <span class="hero-sparkle-left">✨</span>
+    <span class="hero-sparkle-right">🌙</span>
+    
     <h2>La Profecía del Primogénito</h2>
     <p>Todo comenzó con la desesperada lucha de unos padres por proteger a su primer hijo. Al enterarse de una aterradora profecía que predecía su muerte, hicieron lo imposible por burlar al destino.</p>
     <button class="btn-hero" onclick="openLoreModal()">✨ Crear una nueva historia</button>
