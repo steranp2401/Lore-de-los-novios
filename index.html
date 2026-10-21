@@ -16,26 +16,21 @@
   <!-- HEADER -->
   <header>
     <div class="brand">
-      <div class="plumbob-badge">
-        💙
-      </div>
+      <div class="plumbob-badge">💙</div>
       <div class="brand-text">
         <h1>La Saga Sims</h1>
         <p>Historia de unos novios</p>
       </div>
     </div>
-
-    <!-- AVATAR CENTRADO TOTALMENTE VACÍO PARA TU FOTO -->
     <div class="header-avatar" id="avatarContainer"></div>
   </header>
 
-  <!-- SECCIÓN HERO CON SOLO LOS DESTELLOS LATERALES -->
+  <!-- HERO -->
   <section class="hero">
     <span class="hero-sparkle-left">✨</span>
     <span class="hero-sparkle-right">🌙</span>
-    
     <h2>La Profecía del Primogénito</h2>
-    <p>Todo comenzó con la desesperada lucha de unos padres por proteger a su primer hijo. Al enterarse de una aterradora profecía que predecía su muerte, hicieron lo imposible por burlar al destino.</p>
+    <p>Todo comenzó con la desesperada lucha de unos padres por proteger a su primer hijo frente al destino.</p>
     <button class="btn-hero" onclick="openLoreModal()">✨ Crear una nueva historia</button>
   </section>
 
@@ -53,59 +48,49 @@
     </div>
   </div>
 
-  <!-- DISPOSICIÓN PRINCIPAL -->
+  <!-- LAYOUT PRINCIPAL -->
   <div class="main-layout">
-
-    <!-- COLUMNA IZQUIERDA: 4 TARJETAS DE NAVEGACIÓN -->
     <nav>
       <button class="nav-card active" onclick="switchTab('arbol', event)" id="btn-arbol">
         <div class="card-icon-box">👥</div>
         <h3>Árbol genealógico</h3>
-        <p>Descubre el legado, las generaciones y el linaje de cada familia.</p>
-        <div class="card-action-row">
-          <span>Capítulos</span>
-          <span>→</span>
-        </div>
+        <p>Legado, generaciones y linaje de la familia.</p>
+        <div class="card-action-row"><span>Ver</span><span>→</span></div>
       </button>
 
       <button class="nav-card" onclick="switchTab('mascotas', event)" id="btn-mascotas">
         <div class="card-icon-box">🐾</div>
         <h3>Animalines</h3>
-        <p>Conoce a cada animalín pequeñín y su familia completa.</p>
-        <div class="card-action-row">
-          <span>Perfiles</span>
-          <span>→</span>
-        </div>
+        <p>Árbol y perfiles de las mascotas del legado.</p>
+        <div class="card-action-row"><span>Ver</span><span>→</span></div>
       </button>
 
       <button class="nav-card" onclick="switchTab('lore', event)" id="btn-lore">
         <div class="card-icon-box">📖</div>
         <h3>Historia</h3>
-        <p>Adéntrate en la biografía de cada Sim y en los acontecimientos que marcaron su destino.</p>
-        <div class="card-action-row">
-          <span>Ver árbol</span>
-          <span>→</span>
-        </div>
+        <p>Capítulos mágicos y acontecimientos.</p>
+        <div class="card-action-row"><span>Ver</span><span>→</span></div>
       </button>
 
       <button class="nav-card" onclick="switchTab('casas', event)" id="btn-casas">
         <div class="card-icon-box">🏰</div>
         <h3>Casa</h3>
-        <p>¿Dónde vive cada Sim y qué secretos guardan sus solares?</p>
-        <div class="card-action-row">
-          <span>Fotos</span>
-          <span>→</span>
-        </div>
+        <p>Residencias y solares del mundo Sim.</p>
+        <div class="card-action-row"><span>Ver</span><span>→</span></div>
       </button>
     </nav>
 
-    <!-- COLUMNA DERECHA: PESTAÑAS Y CONTENIDO -->
     <main>
-      <!-- ÁRBOL GENEALÓGICO -->
+      <!-- ÁRBOL DE SIMS -->
       <section id="arbol" class="tab-content active">
         <div class="tree-header-flex">
           <div>
             <h3>Árbol genealógico</h3>
+            <div style="margin-top:6px;">
+              <select id="familyFilter" onchange="handleFamilyFilter()" style="padding:4px 10px; border-radius:8px; border:1px solid #e3d8f8; font-size:0.8rem;">
+                <option value="">Todas las familias</option>
+              </select>
+            </div>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
             <div class="gen-pill">♡ Arbolito de novios</div>
@@ -115,6 +100,21 @@
         <div class="tree-viewport" id="treeContainer">
           <div class="tree-wrapper" id="treeView"></div>
         </div>
+      </section>
+
+      <!-- MASCOTAS (CON SU PROPIO ÁRBOL) -->
+      <section id="mascotas" class="tab-content">
+        <div class="tree-header-flex">
+          <div>
+            <h3>Animalines y Mascotas</h3>
+            <p>Linaje y compañeros de hogar</p>
+          </div>
+          <button class="action-btn" onclick="openPetModal()">+ Añadir Mascota</button>
+        </div>
+        <div class="tree-viewport" style="margin-bottom:20px;" id="petTreeContainer">
+          <div class="tree-wrapper" id="petTreeView"></div>
+        </div>
+        <div class="cards-grid" id="mascotasGrid"></div>
       </section>
 
       <!-- HISTORIA -->
@@ -140,31 +140,23 @@
         </div>
         <div class="cards-grid" id="casasGrid"></div>
       </section>
-
-      <!-- MASCOTAS -->
-      <section id="mascotas" class="tab-content">
-        <div class="tree-header-flex">
-          <div>
-            <h3>Animalines y Mascotas</h3>
-            <p>Compañeros de hogar</p>
-          </div>
-          <button class="action-btn" onclick="openPetModal()">+ Añadir Mascota</button>
-        </div>
-        <div class="cards-grid" id="mascotasGrid"></div>
-      </section>
     </main>
-
   </div>
 
-  <!-- MODALES DE SUPABASE -->
+  <!-- MODAL SIM -->
   <div class="modal-overlay" id="simModal">
     <div class="modal-card">
       <h2 id="simModalTitle">Añadir Nuevo Sim</h2>
       <form id="simForm" onsubmit="saveSim(event)">
+        <input type="hidden" id="simId" value="">
         <input type="hidden" id="simParentId" value="">
         <div class="form-group">
           <label>Nombre y Apellido:</label>
           <input type="text" id="simName" required placeholder="Ej: Bella Goth">
+        </div>
+        <div class="form-group">
+          <label>Familia / Dinastía:</label>
+          <input type="text" id="simFamily" placeholder="Ej: Familia Principal">
         </div>
         <div class="form-group">
           <label>Generación o Rol:</label>
@@ -181,6 +173,14 @@
           </select>
         </div>
         <div class="form-group">
+          <label>Pareja / Cónyuge:</label>
+          <input type="text" id="simSpouse" placeholder="Ej: Mortimero Goth">
+        </div>
+        <div class="form-group">
+          <label>URL de Imagen / Foto:</label>
+          <input type="text" id="simImage" placeholder="https://...">
+        </div>
+        <div class="form-group">
           <label>Rasgos:</label>
           <input type="text" id="simTraits" placeholder="Ej: Romántico, Alegre">
         </div>
@@ -190,7 +190,7 @@
         </div>
         <div class="form-group">
           <label>Lore / Biografía corta:</label>
-          <textarea id="simLore" rows="3" placeholder="Resumen o historia breve del Sim..."></textarea>
+          <textarea id="simLore" rows="3" placeholder="Resumen o historia breve..."></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('simModal')">Cancelar</button>
@@ -200,21 +200,23 @@
     </div>
   </div>
 
+  <!-- MODAL HISTORIA -->
   <div class="modal-overlay" id="loreModal">
     <div class="modal-card">
-      <h2>Añadir Capítulo</h2>
+      <h2 id="loreModalTitle">Añadir Capítulo</h2>
       <form onsubmit="saveLoreEvent(event)">
+        <input type="hidden" id="loreId" value="">
         <div class="form-group">
           <label>Título:</label>
-          <input type="text" id="loreTitle" required placeholder="Ej: El misterio de la mansión">
+          <input type="text" id="loreTitle" required placeholder="Ej: El misterio">
         </div>
         <div class="form-group">
           <label>Sims Involucrados:</label>
-          <input type="text" id="loreSims" placeholder="Ej: Alexander Rivera, Bella Goth">
+          <input type="text" id="loreSims" placeholder="Ej: Alexander, Bella">
         </div>
         <div class="form-group">
           <label>Detalles:</label>
-          <textarea id="loreDesc" rows="4" required placeholder="Escribe el acontecimiento completo..."></textarea>
+          <textarea id="loreDesc" rows="4" required placeholder="Relato completo..."></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('loreModal')">Cancelar</button>
@@ -224,13 +226,15 @@
     </div>
   </div>
 
+  <!-- MODAL CASA -->
   <div class="modal-overlay" id="houseModal">
     <div class="modal-card">
-      <h2>Añadir Residencia</h2>
+      <h2 id="houseModalTitle">Añadir Residencia</h2>
       <form onsubmit="saveHouse(event)">
+        <input type="hidden" id="houseId" value="">
         <div class="form-group">
           <label>Nombre del Solar:</label>
-          <input type="text" id="houseName" required placeholder="Ej: Mansión Aethelgard">
+          <input type="text" id="houseName" required placeholder="Ej: Mansión">
         </div>
         <div class="form-group">
           <label>Mundo:</label>
@@ -242,7 +246,7 @@
         </div>
         <div class="form-group">
           <label>Notas:</label>
-          <textarea id="houseDesc" rows="3" placeholder="Detalles o secretos del solar..."></textarea>
+          <textarea id="houseDesc" rows="3" placeholder="Detalles..."></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('houseModal')">Cancelar</button>
@@ -252,25 +256,37 @@
     </div>
   </div>
 
+  <!-- MODAL MASCOTA (CON PADRE PARA ÁRBOL) -->
   <div class="modal-overlay" id="petModal">
     <div class="modal-card">
-      <h2>Añadir Mascota</h2>
+      <h2 id="petModalTitle">Añadir Mascota</h2>
       <form onsubmit="savePet(event)">
+        <input type="hidden" id="petId" value="">
         <div class="form-group">
           <label>Nombre:</label>
           <input type="text" id="petName" required placeholder="Ej: Pelusa">
         </div>
         <div class="form-group">
+          <label>Padre / Madre (Árbol Mascotas):</label>
+          <select id="petParentSelect">
+            <option value="">-- Ninguno (Fundador) --</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label>Especie/Detalles:</label>
-          <input type="text" id="petMeta" placeholder="Ej: Gato Persa Mágico">
+          <input type="text" id="petMeta" placeholder="Ej: Gato Persa">
         </div>
         <div class="form-group">
           <label>Dueño:</label>
           <input type="text" id="petOwner" placeholder="Ej: Luna Rivera">
         </div>
         <div class="form-group">
+          <label>URL Imagen / Foto:</label>
+          <input type="text" id="petImage" placeholder="https://...">
+        </div>
+        <div class="form-group">
           <label>Notas:</label>
-          <textarea id="petDesc" rows="3" placeholder="Notas sobre la mascota..."></textarea>
+          <textarea id="petDesc" rows="3" placeholder="Notas..."></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="cancel-btn" onclick="closeModal('petModal')">Cancelar</button>
@@ -281,7 +297,6 @@
   </div>
 
   <script>
-    // Sincronizar clase activa en la barra lateral al cambiar de pestaña
     const originalSwitchTab = window.switchTab;
     window.switchTab = function(tabId, ev) {
       if (originalSwitchTab) originalSwitchTab(tabId, ev);
@@ -290,7 +305,6 @@
       if (activeBtn) activeBtn.classList.add('active');
     };
   </script>
-  <!-- Archivo JS de Supabase -->
   <script src="js/app.js"></script>
 </body>
 </html>
