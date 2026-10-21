@@ -1,5 +1,6 @@
 // Configuración Real de Supabase
 const SUPABASE_URL = "https://sdmlcxqlrywncxtezjsn.supabase.co";
+// Utiliza tu clave de API publishable key copiada desde tu proyecto de Supabase
 const SUPABASE_ANON_KEY = "sb_publishable_vVuqmA40xDlawc6AhCT1TQ_yZ-j2wz7";
 
 // Usamos 'db' para evitar el conflicto de nombres con la librería global
@@ -53,11 +54,13 @@ async function fetchPets() {
 // Cambio de Pestañas
 window.switchTab = function(tabId, ev) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
-  if (ev && ev.target) {
-    ev.target.classList.add('active');
-  }
+  document.querySelectorAll('.nav-card').forEach(el => el.classList.remove('active'));
+  
+  const targetTab = document.getElementById(tabId);
+  if (targetTab) targetTab.classList.add('active');
+  
+  const activeBtn = document.getElementById('btn-' + tabId);
+  if (activeBtn) activeBtn.classList.add('active');
 };
 
 // Modal Manager
@@ -91,14 +94,6 @@ window.openSimModal = function(parentId = null) {
 window.openLoreModal = function() { window.openModal('loreModal'); };
 window.openHouseModal = function() { window.openModal('houseModal'); };
 window.openPetModal = function() { window.openModal('petModal'); };
-
-// Toggle View Mode
-window.toggleTreeViewMode = function() {
-  isListMode = !isListMode;
-  const btn = document.getElementById('toggleViewBtn');
-  if (btn) btn.innerText = isListMode ? "Vista Árbol" : "Vista Lista";
-  renderTree();
-};
 
 // SAVE FUNCTIONS
 window.saveSim = async function(e) {
@@ -150,6 +145,7 @@ window.saveHouse = async function(e) {
   const newHouse = {
     name: document.getElementById('houseName').value,
     world: document.getElementById('houseWorld').value || "Mundo Sim",
+    sims: document.getElementById('houseSims').value || "Familia",
     desc: document.getElementById('houseDesc').value || ""
   };
 
@@ -184,6 +180,8 @@ window.savePet = async function(e) {
 
 // DELETE ITEM
 window.deleteItem = async function(type, id) {
+  if (!confirm("¿Seguro que quieres eliminar este registro?")) return;
+
   let table = '';
   if (type === 'sim') table = 'sims';
   else if (type === 'lore') table = 'lore_events';
@@ -207,28 +205,7 @@ function renderTree() {
   );
 
   if (filteredSims.length === 0) {
-    container.innerHTML = `<div class="empty-state">No hay Sims creados aún. ¡Añade tu primer fundador!</div>`;
-    return;
-  }
-
-  if (isListMode) {
-    let html = '<div class="cards-grid" style="text-align:left;">';
-    filteredSims.forEach(sim => {
-      html += `
-        <div class="info-card">
-          <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
-          <h3>${sim.name}</h3>
-          <div class="meta">${sim.generation || ''} • ${sim.traits || ''}</div>
-          <p>${sim.lore || "Sin lore registrado."}</p>
-          ${sim.house ? `<span class="card-footer-tag">🏡 ${sim.house}</span>` : ''}
-          <div style="margin-top:8px;">
-            <button class="mini-btn" onclick="openSimModal('${sim.id}')">+ Añadir Descendiente</button>
-          </div>
-        </div>
-      `;
-    });
-    html += '</div>';
-    container.innerHTML = html;
+    container.innerHTML = `<div class="empty-state" style="padding:40px; color:#6e6592;">No hay Sims creados aún. ¡Añade tu primer fundador!</div>`;
     return;
   }
 
@@ -241,15 +218,12 @@ function renderTree() {
       branchHtml += `
         <li>
           <div class="sim-tree-card">
-            <div class="sim-tree-header">
-              <h4>${child.name}</h4>
-              <span class="gen-badge">${child.generation || ''}</span>
-            </div>
-            <div class="sim-tree-meta">${child.traits || ''}</div>
-            ${child.house ? `<div style="font-size:0.75rem; color:var(--text-muted);">🏡 ${child.house}</div>` : ''}
-            <div class="sim-card-actions">
+            <h4>${child.name}</h4>
+            <div class="sim-tree-meta">${child.generation || ''}</div>
+            ${child.traits ? `<div style="font-size:0.75rem; color:#6e6592; margin-top:4px;">${child.traits}</div>` : ''}
+            <div style="margin-top:8px; display:flex; gap:4px; justify-content:center;">
               <button class="mini-btn" onclick="openSimModal('${child.id}')">+ Descendiente</button>
-              <button class="mini-btn" onclick="deleteItem('sim', '${child.id}')">Eliminar</button>
+              <button class="mini-btn" onclick="deleteItem('sim', '${child.id}')" style="color:#ff4d4d;">✕</button>
             </div>
           </div>
           ${buildBranch(child.id)}
@@ -268,15 +242,12 @@ function renderTree() {
       treeHtml += `
         <li>
           <div class="sim-tree-card">
-            <div class="sim-tree-header">
-              <h4>${root.name}</h4>
-              <span class="gen-badge">${root.generation || ''}</span>
-            </div>
-            <div class="sim-tree-meta">${root.traits || ''}</div>
-            ${root.house ? `<div style="font-size:0.75rem; color:var(--text-muted);">🏡 ${root.house}</div>` : ''}
-            <div class="sim-card-actions">
+            <h4>${root.name}</h4>
+            <div class="sim-tree-meta">${root.generation || ''}</div>
+            ${root.traits ? `<div style="font-size:0.75rem; color:#6e6592; margin-top:4px;">${root.traits}</div>` : ''}
+            <div style="margin-top:8px; display:flex; gap:4px; justify-content:center;">
               <button class="mini-btn" onclick="openSimModal('${root.id}')">+ Descendiente</button>
-              <button class="mini-btn" onclick="deleteItem('sim', '${root.id}')">Eliminar</button>
+              <button class="mini-btn" onclick="deleteItem('sim', '${root.id}')" style="color:#ff4d4d;">✕</button>
             </div>
           </div>
           ${buildBranch(root.id)}
@@ -323,23 +294,23 @@ function renderLore() {
         <h3>${sim.name}</h3>
         <div class="meta">${sim.generation || ''} • ${sim.traits || ''}</div>
         <p>${sim.lore ? sim.lore : "Sin biografía escrita aún."}</p>
-        ${sim.house ? `<span class="card-footer-tag">🏡 ${sim.house}</span>` : ''}
+        ${sim.house ? `<span style="font-size:0.78rem; color:#7c52f6; font-weight:600;">🏡 ${sim.house}</span>` : ''}
       </div>
     `;
   });
 
   filteredExtraLore.forEach(ev => {
     html += `
-      <div class="info-card blue-theme">
+      <div class="info-card">
         <button class="delete-btn" onclick="deleteItem('lore', '${ev.id}')">✕</button>
-        <h3>${ev.title}</h3>
-        <div class="meta">Involucrados: ${ev.sims || ''}</div>
+        <h3>📖 ${ev.title}</h3>
+        <div class="meta">Sims involucrados: ${ev.sims || ''}</div>
         <p>${ev.desc}</p>
       </div>
     `;
   });
 
-  if (!html) html = `<div class="empty-state">No hay eventos de historia o biografías de Sims registradas.</div>`;
+  if (!html) html = `<div class="empty-state" style="color:#6e6592; padding:20px;">No hay eventos de historia o biografías de Sims registradas.</div>`;
   loreGrid.innerHTML = html;
 }
 
@@ -350,20 +321,22 @@ function renderHouses() {
 
   const filtered = housesData.filter(h => 
     (h.name && h.name.toLowerCase().includes(searchQuery)) ||
-    (h.world && h.world.toLowerCase().includes(searchQuery))
+    (h.world && h.world.toLowerCase().includes(searchQuery)) ||
+    (h.sims && h.sims.toLowerCase().includes(searchQuery))
   );
 
   if (filtered.length === 0) {
-    housesGrid.innerHTML = `<div class="empty-state">No se han registrado residencias o solares.</div>`;
+    housesGrid.innerHTML = `<div class="empty-state" style="color:#6e6592; padding:20px;">No se han registrado residencias o solares.</div>`;
     return;
   }
 
   housesGrid.innerHTML = filtered.map(h => `
-    <div class="info-card pink-theme">
+    <div class="info-card">
       <button class="delete-btn" onclick="deleteItem('house', '${h.id}')">✕</button>
-      <h3>${h.name}</h3>
+      <h3>🏰 ${h.name}</h3>
       <div class="meta">📍 Mundo: ${h.world}</div>
-      <p>${h.desc || "Sin descripción adicional."}</p>
+      <div class="meta" style="color:#7c52f6; margin-top:2px;">👥 Habitantes: ${h.sims || 'Por asignar'}</div>
+      <p style="margin-top:6px;">${h.desc || "Sin descripción adicional."}</p>
     </div>
   `).join('');
 }
@@ -379,12 +352,12 @@ function renderPets() {
   );
 
   if (filtered.length === 0) {
-    mascotasGrid.innerHTML = `<div class="empty-state">No hay mascotas registradas en el legado.</div>`;
+    mascotasGrid.innerHTML = `<div class="empty-state" style="color:#6e6592; padding:20px;">No hay mascotas registradas en el legado.</div>`;
     return;
   }
 
   mascotasGrid.innerHTML = filtered.map(p => `
-    <div class="info-card blue-theme">
+    <div class="info-card">
       <button class="delete-btn" onclick="deleteItem('pet', '${p.id}')">✕</button>
       <h3>🐾 ${p.name}</h3>
       <div class="meta">${p.meta || ''} • Dueño: ${p.owner || ''}</div>
