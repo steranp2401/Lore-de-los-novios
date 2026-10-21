@@ -13,17 +13,8 @@
 </head>
 <body>
 
-  <!-- HEADER AZUL OSCURO -->
+  <!-- HEADER OSCURO -->
   <header>
-    <div class="brand">
-      <div class="plumbob-badge">
-        🏠
-      </div>
-      <div>
-        <h1>La saga de Los Sims</h1>
-        <p>Historia de unos novios</p>
-      </div>
-    </div>
     <!-- Avatar superpuesto exactamente en el centro -->
     <div class="header-avatar">
       <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="Avatar">
@@ -40,7 +31,7 @@
   <!-- CONTROLES (Buscador y Estadísticas para Supabase) -->
   <div class="top-controls">
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Buscar sim, historia, mundo..." oninput="handleSearch()">
+      <input type="text" id="searchInput" placeholder="Buscar..." oninput="handleSearch()">
     </div>
     <div class="stats-badges">
       <span class="stat-pill">Sims: <strong id="statSims">0</strong></span>
@@ -53,10 +44,10 @@
   <!-- DISPOSICIÓN PRINCIPAL -->
   <div class="main-layout">
 
-    <!-- COLUMNA IZQUIERDA: 4 TARJETAS EXACTAS DE NAVEGACIÓN -->
+    <!-- COLUMNA IZQUIERDA: 4 TARJETAS DE NAVEGACIÓN -->
     <nav>
       <button class="nav-card active" onclick="switchTab('arbol', event)" id="btn-arbol">
-        <div class="card-icon-box">📖</div>
+        <div class="card-icon-box">👥</div>
         <h3>Árbol genealógico</h3>
         <p>Descubre el legado, las generaciones y el linaje de cada familia.</p>
         <div class="card-action-row">
@@ -66,7 +57,7 @@
       </button>
 
       <button class="nav-card" onclick="switchTab('mascotas', event)" id="btn-mascotas">
-        <div class="card-icon-box">👥</div>
+        <div class="card-icon-box">🐾</div>
         <h3>Animalines</h3>
         <p>Conoce a cada animalín pequeñín y su familia completa.</p>
         <div class="card-action-row">
@@ -76,7 +67,7 @@
       </button>
 
       <button class="nav-card" onclick="switchTab('lore', event)" id="btn-lore">
-        <div class="card-icon-box">🌳</div>
+        <div class="card-icon-box">📖</div>
         <h3>Historia</h3>
         <p>Adéntrate en la biografía de cada Sim y en los acontecimientos que marcaron su destino.</p>
         <div class="card-action-row">
@@ -106,8 +97,7 @@
             <p>Familia Rivera - tres generaciones</p>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <div class="gen-pill">♡ 3 generaciones</div>
-            <button class="action-btn secondary" onclick="toggleTreeViewMode()" id="toggleViewBtn">Vista Lista</button>
+            <div class="gen-pill">♡</div>
             <button class="action-btn" onclick="openSimModal()">+ Añadir Sim</button>
           </div>
         </div>
@@ -116,7 +106,7 @@
         </div>
       </section>
 
-      <!-- HISTORIA / LORE -->
+      <!-- HISTORIA  -->
       <section id="lore" class="tab-content">
         <div class="tree-header-flex">
           <div>
@@ -285,7 +275,7 @@
       if (activeBtn) activeBtn.classList.add('active');
     };
   </script>
-  <!-- Tu archivo JS de Supabase perfectamente intacto -->
+  <!-- Archivo JS de Supabase  -->
   <script src="js/app.js"></script>
 </body>
 </html>
