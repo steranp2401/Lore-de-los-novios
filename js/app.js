@@ -52,18 +52,25 @@ window.switchTab = function(tabId, ev) {
 window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; };
 window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; };
 
-// --- SIM MODAL (CREAR / EDITAR) ---
+// --- SIM MODAL (PADRE Y MADRE INDEPENDIENTES) ---
 window.openSimModal = function(parentId = null, editId = null) {
   document.getElementById('simForm').reset();
   document.getElementById('simId').value = "";
-  document.getElementById('simParentId').value = parentId || "";
 
-  const select = document.getElementById('simParentSelect');
-  select.innerHTML = '<option value="">-- Ninguno (Fundador Raíz) --</option>';
+  const fatherSelect = document.getElementById('simFatherSelect');
+  const motherSelect = document.getElementById('simMotherSelect');
+  
+  fatherSelect.innerHTML = '<option value="">-- Ninguno --</option>';
+  motherSelect.innerHTML = '<option value="">-- Ninguna --</option>';
+
   simsData.forEach(sim => {
-    select.innerHTML += `<option value="${sim.id}">${sim.name} (${sim.generation || ''})</option>`;
+    fatherSelect.innerHTML += `<option value="${sim.id}">${sim.name} (${sim.generation || ''})</option>`;
+    motherSelect.innerHTML += `<option value="${sim.id}">${sim.name} (${sim.generation || ''})</option>`;
   });
-  if (parentId) select.value = parentId;
+
+  if (parentId) {
+    fatherSelect.value = parentId; // Por defecto asigna como padre si se pulsa en un nodo
+  }
 
   if (editId) {
     document.getElementById('simModalTitle').innerText = "Editar Sim";
@@ -73,7 +80,8 @@ window.openSimModal = function(parentId = null, editId = null) {
       document.getElementById('simName').value = sim.name || "";
       document.getElementById('simFamily').value = sim.family || "";
       document.getElementById('simGen').value = sim.generation || "Generación 1";
-      document.getElementById('simParentSelect').value = sim.parent_id || "";
+      fatherSelect.value = sim.father_id || "";
+      motherSelect.value = sim.mother_id || "";
       document.getElementById('simSpouse').value = sim.spouse || "";
       document.getElementById('simImage').value = sim.image_url || "";
       document.getElementById('simTraits').value = sim.traits || "";
@@ -89,10 +97,12 @@ window.openSimModal = function(parentId = null, editId = null) {
 window.saveSim = async function(e) {
   e.preventDefault();
   const editId = document.getElementById('simId').value;
-  const parentSelectVal = document.getElementById('simParentSelect').value;
+  const fatherVal = document.getElementById('simFatherSelect').value;
+  const motherVal = document.getElementById('simMotherSelect').value;
 
   const simPayload = {
-    parent_id: parentSelectVal ? parentSelectVal : null,
+    father_id: fatherVal ? fatherVal : null,
+    mother_id: motherVal ? motherVal : null,
     name: document.getElementById('simName').value,
     family: document.getElementById('simFamily').value || "Principal",
     generation: document.getElementById('simGen').value,
@@ -122,7 +132,7 @@ window.saveSim = async function(e) {
   }
 };
 
-// --- LORE MODAL (CREAR / EDITAR) ---
+// --- LORE MODAL ---
 window.openLoreModal = function(editId = null) {
   document.getElementById('loreId').value = "";
   document.getElementById('loreTitle').value = "";
@@ -167,7 +177,7 @@ window.saveLoreEvent = async function(e) {
   }
 };
 
-// --- HOUSE MODAL (CREAR / EDITAR) ---
+// --- HOUSE MODAL ---
 window.openHouseModal = function(editId = null) {
   document.getElementById('houseId').value = "";
   document.getElementById('houseName').value = "";
@@ -215,7 +225,7 @@ window.saveHouse = async function(e) {
   }
 };
 
-// --- PET MODAL (CREAR / EDITAR) ---
+// --- PET MODAL ---
 window.openPetModal = function(parentId = null, editId = null) {
   document.getElementById('petId').value = "";
   document.getElementById('petName').value = "";
@@ -277,7 +287,6 @@ window.savePet = async function(e) {
   }
 };
 
-// --- ELIMINAR ---
 window.deleteItem = async function(type, id) {
   if (!confirm("¿Seguro que deseas eliminar este registro?")) return;
   let table = type === 'sim' ? 'sims' : type === 'lore' ? 'lore_events' : type === 'house' ? 'houses' : 'pets';
@@ -286,7 +295,6 @@ window.deleteItem = async function(type, id) {
   await loadAllData();
 };
 
-// --- FILTRO DE FAMILIAS ---
 function updateFamilyFilterOptions() {
   const select = document.getElementById('familyFilter');
   if (!select) return;
@@ -304,7 +312,7 @@ window.handleFamilyFilter = function() {
   renderTree();
 };
 
-// --- RENDER ÁRBOL DE SIMS ---
+// --- RENDER ÁRBOL CON ASCENDENCIA DE PADRE O MADRE ---
 function renderTree() {
   const container = document.getElementById('treeView');
   if (!container) return;
@@ -323,8 +331,8 @@ function renderTree() {
     return;
   }
 
-  function buildBranch(parentId) {
-    const children = filteredSims.filter(s => String(s.parent_id) === String(parentId));
+  function buildBranch(simId) {
+    const children = filteredSims.filter(s => String(s.father_id) === String(simId) || String(s.mother_id) === String(simId));
     if (children.length === 0) return '';
 
     let branchHtml = '<ul>';
@@ -352,7 +360,7 @@ function renderTree() {
     return branchHtml;
   }
 
-  const roots = filteredSims.filter(s => !s.parent_id);
+  const roots = filteredSims.filter(s => !s.father_id && !s.mother_id);
   let treeHtml = '<ul>';
   
   if (roots.length > 0) {
@@ -385,7 +393,6 @@ function renderTree() {
   container.innerHTML = treeHtml;
 }
 
-// --- RENDER ÁRBOL DE MASCOTAS ---
 function renderPetTree() {
   const container = document.getElementById('petTreeView');
   if (!container) return;
@@ -449,7 +456,6 @@ function renderPetTree() {
   container.innerHTML = treeHtml;
 }
 
-// --- RENDER HISTORIA ---
 function renderLore() {
   const loreGrid = document.getElementById('loreGrid');
   if (!loreGrid) return;
@@ -473,7 +479,6 @@ function renderLore() {
   loreGrid.innerHTML = html;
 }
 
-// --- RENDER CASAS ---
 function renderHouses() {
   const housesGrid = document.getElementById('casasGrid');
   if (!housesGrid) return;
@@ -498,7 +503,6 @@ function renderHouses() {
   housesGrid.innerHTML = html;
 }
 
-// --- RENDER MASCOTAS GRID ---
 function renderPets() {
   renderPetTree();
   const mascotasGrid = document.getElementById('mascotasGrid');
