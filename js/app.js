@@ -308,7 +308,7 @@ window.handleFamilyFilter = function() {
   renderTree();
 };
 
-// --- RENDER ÁRBOL SIN DUPLICADOS Y CON PAREJAS UNIDAS ---
+// --- RENDER ÁRBOL GENEALÓGICO RECURSIVO CON PAREJAS ---
 function renderTree() {
   const container = document.getElementById('treeView');
   if (!container) return;
@@ -345,42 +345,73 @@ function renderTree() {
     `;
   }
 
-  // Conjunto global para rastrear Sims que ya se pintaron y evitar duplicados por completo
   const renderedSimIds = new Set();
 
-  function buildBranchForParent(parentId) {
-    // Buscar los hijos directos donde este parentId figure como padre O como madre
+  // Función recursiva que renderiza Sims o parejas y sus descendientes a cualquier nivel
+  function buildRecursiveTree(parentIds) {
+    // Buscar Sims cuyos padres sean alguno de los IDs proporcionados
     const children = filteredSims.filter(s => 
-      (String(s.father_id) === String(parentId) || String(s.mother_id) === String(parentId)) &&
+      (parentIds.includes(String(s.father_id)) || parentIds.includes(String(s.mother_id))) &&
       !renderedSimIds.has(String(s.id))
     );
 
     if (children.length === 0) return '';
 
     let branchHtml = '<ul>';
+    
+    // Procesar cada hijo
     children.forEach(child => {
+      if (renderedSimIds.has(String(child.id))) return;
+
+      // Buscar si este hijo tiene cónyuge/pareja registrada en el sistema
+      const partner = filteredSims.find(p => 
+        String(p.id) !== String(child.id) &&
+        !renderedSimIds.has(String(p.id)) &&
+        (
+          (child.spouse && p.name && p.name.toLowerCase().includes(child.spouse.toLowerCase())) ||
+          (p.spouse && child.name && child.name.toLowerCase().includes(p.spouse.toLowerCase())) ||
+          filteredSims.some(grandchild => 
+            (String(grandchild.father_id) === String(child.id) && String(grandchild.mother_id) === String(p.id)) ||
+            (String(grandchild.mother_id) === String(child.id) && String(grandchild.father_id) === String(p.id))
+          )
+        )
+      );
+
       renderedSimIds.add(String(child.id));
-      branchHtml += `
-        <li>
-          ${renderSingleCard(child)}
-          ${buildBranchForParent(child.id)}
-        </li>
-      `;
+
+      if (partner) {
+        renderedSimIds.add(String(partner.id));
+        branchHtml += `
+          <li>
+            <div class="couple-container">
+              ${renderSingleCard(child)}
+              <div class="couple-heart">💍</div>
+              ${renderSingleCard(partner)}
+            </div>
+            ${buildRecursiveTree([String(child.id), String(partner.id)])}
+          </li>
+        `;
+      } else {
+        branchHtml += `
+          <li>
+            ${renderSingleCard(child)}
+            ${buildRecursiveTree([String(child.id)])}
+          </li>
+        `;
+      }
     });
+
     branchHtml += '</ul>';
     return branchHtml;
   }
 
-  // Identificar fundadores principales (los que no tienen ni padre ni madre)
+  // Raíces principales (Fundadores sin padres)
   const rootSims = filteredSims.filter(s => !s.father_id && !s.mother_id);
-  
-  // Agrupar fundadores que son pareja para mostrarlos en un solo bloque unido
   let treeHtml = '<ul>';
-  
-  rootSims.forEach(sim => {
-    if (renderedSimIds.has(String(sim.id))) return; // Si ya fue pintado como pareja de otro
 
-    // Buscar si este fundador tiene una pareja registrada que también sea fundador raíz
+  rootSims.forEach(sim => {
+    if (renderedSimIds.has(String(sim.id))) return;
+
     const partner = rootSims.find(p => 
       String(p.id) !== String(sim.id) && 
       !renderedSimIds.has(String(p.id)) &&
@@ -398,7 +429,6 @@ function renderTree() {
 
     if (partner) {
       renderedSimIds.add(String(partner.id));
-      // Renderizar bloque de pareja unida
       treeHtml += `
         <li>
           <div class="couple-container">
@@ -406,44 +436,18 @@ function renderTree() {
             <div class="couple-heart">💍</div>
             ${renderSingleCard(partner)}
           </div>
-          ${buildBranchForCouple(sim.id, partner.id)}
+          ${buildRecursiveTree([String(sim.id), String(partner.id)])}
         </li>
       `;
     } else {
-      // Renderizar como fundador individual
       treeHtml += `
         <li>
           ${renderSingleCard(sim)}
-          ${buildBranchForParent(sim.id)}
+          ${buildRecursiveTree([String(sim.id)])}
         </li>
       `;
     }
   });
-
-  function buildBranchForCouple(id1, id2) {
-    // Buscar los hijos comunes de la pareja (o los de cualquiera de los dos)
-    const children = filteredSims.filter(s => 
-      (
-        (String(s.father_id) === String(id1) || String(s.mother_id) === String(id1)) ||
-        (String(s.father_id) === String(id2) || String(s.mother_id) === String(id2))
-      ) && !renderedSimIds.has(String(s.id))
-    );
-
-    if (children.length === 0) return '';
-
-    let branchHtml = '<ul>';
-    children.forEach(child => {
-      renderedSimIds.add(String(child.id));
-      branchHtml += `
-        <li>
-          ${renderSingleCard(child)}
-          ${buildBranchForParent(child.id)}
-        </li>
-      `;
-    });
-    branchHtml += '</ul>';
-    return branchHtml;
-  }
 
   treeHtml += '</ul>';
   container.innerHTML = treeHtml;
@@ -512,12 +516,33 @@ function renderPetTree() {
   container.innerHTML = treeHtml;
 }
 
+// --- RENDER HISTORIA (INCLUYE CAPÍTULOS Y BIOGRAFÍAS DE SIMS) ---
 function renderLore() {
   const loreGrid = document.getElementById('loreGrid');
   if (!loreGrid) return;
   let html = '';
 
+  // 1. Mostrar Biografías de los Sims que tengan lore
+  const simsWithLore = simsData.filter(s => s.lore && s.lore.trim() !== "");
+  simsWithLore.forEach(sim => {
+    if (searchQuery && !sim.name.toLowerCase().includes(searchQuery) && !sim.lore.toLowerCase().includes(searchQuery)) return;
+    html += `
+      <div class="info-card">
+        <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
+        <h3>👤 ${sim.name}</h3>
+        <div class="meta" style="color:#7c52f6; font-size:0.78rem;">${sim.generation || ''} • ${sim.traits || ''}</div>
+        <p style="font-size:0.85rem;">${sim.lore}</p>
+        ${sim.house ? `<div style="font-size:0.75rem; color:#4c6ef5; font-weight:600; margin-top:4px;">🏡 ${sim.house}</div>` : ''}
+        <div class="card-actions-bottom">
+          <button class="mini-btn" onclick="openSimModal(null, '${sim.id}')">Editar Sim</button>
+        </div>
+      </div>
+    `;
+  });
+
+  // 2. Mostrar Capítulos independientes
   extraLore.forEach(ev => {
+    if (searchQuery && !ev.title.toLowerCase().includes(searchQuery) && !ev.desc.toLowerCase().includes(searchQuery)) return;
     html += `
       <div class="info-card">
         <button class="delete-btn" onclick="deleteItem('lore', '${ev.id}')">✕</button>
@@ -531,22 +556,32 @@ function renderLore() {
     `;
   });
 
-  if (!html) html = `<div class="empty-state">No hay eventos de historia registrados.</div>`;
+  if (!html) html = `<div class="empty-state">No hay eventos de historia ni biografías de Sims registradas.</div>`;
   loreGrid.innerHTML = html;
 }
 
+// --- RENDER CASAS (VINCULA AUTOMÁTICAMENTE LOS SIMS QUE VIVEN ALLÍ) ---
 function renderHouses() {
   const housesGrid = document.getElementById('casasGrid');
   if (!housesGrid) return;
   let html = '';
 
   housesData.forEach(h => {
+    if (searchQuery && !h.name.toLowerCase().includes(searchQuery) && !h.world.toLowerCase().includes(searchQuery)) return;
+
+    // Buscar Sims cuyo campo "house" coincida con el nombre de esta residencia
+    const residentSims = simsData.filter(s => s.house && s.house.toLowerCase().trim() === h.name.toLowerCase().trim());
+    let residentNames = residentSims.map(s => s.name).join(', ');
+
+    // Si hay un texto manual en h.sims, usarlo o combinarlo
+    let finalResidents = residentNames || h.sims || 'Sin asignación';
+
     html += `
       <div class="info-card">
         <button class="delete-btn" onclick="deleteItem('house', '${h.id}')">✕</button>
         <h3>🏰 ${h.name}</h3>
-        <div class="meta" style="font-size:0.78rem;">📍 Mundo: ${h.world}</div>
-        <div class="meta" style="color:#7c52f6; font-size:0.78rem;">👥 Residentes: ${h.sims || 'Ninguno'}</div>
+        <div class="meta" style="font-size:0.78rem;">📍 Mundo: ${h.world || 'Mundo Sim'}</div>
+        <div class="meta" style="color:#7c52f6; font-size:0.78rem;">👥 Residentes: ${finalResidents}</div>
         <p style="font-size:0.85rem;">${h.desc || "Sin notas."}</p>
         <div class="card-actions-bottom">
           <button class="mini-btn" onclick="openHouseModal('${h.id}')">Editar Residencia</button>
@@ -566,6 +601,7 @@ function renderPets() {
   let html = '';
 
   petsData.forEach(p => {
+    if (searchQuery && !p.name.toLowerCase().includes(searchQuery) && !p.owner.toLowerCase().includes(searchQuery)) return;
     html += `
       <div class="info-card">
         <button class="delete-btn" onclick="deleteItem('pet', '${p.id}')">✕</button>
@@ -585,7 +621,7 @@ function renderPets() {
 
 function updateStats() {
   document.getElementById('statSims').innerText = simsData.length;
-  document.getElementById('statLore').innerText = extraLore.length;
+  document.getElementById('statLore').innerText = simsData.filter(s => s.lore && s.lore.trim() !== "").length + extraLore.length;
   document.getElementById('statHouses').innerText = housesData.length;
   document.getElementById('statPets').innerText = petsData.length;
 }
