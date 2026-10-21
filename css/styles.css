@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=MedievalSharp&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
   --color-header-bg: linear-gradient(135deg, #1b1638 0%, #2a2254 50%, #392e6e 100%);
@@ -6,12 +6,10 @@
   --color-bg: #f2ebfc;
   --color-card: #ffffff;
   
-  --color-text-title: #1a1436;
+  --color-text-title: #2a1b4e;
   --color-text-main: #2d264f;
   --color-text-muted: #6e6592;
   
-  --color-gold: #ffd700;
-  --color-gold-glow: rgba(255, 215, 0, 0.4);
   --color-accent: #7c52f6;
   --color-accent-blue: #6c8eff;
   --color-border: #e3d8f8;
@@ -36,12 +34,33 @@ body {
     radial-gradient(circle at 90% 85%, rgba(108, 142, 255, 0.1) 0%, transparent 40%);
 }
 
-/* FUENTES ÉPICAS */
-h1, h2, h3, .magic-title {
-  font-family: 'Cinzel', serif;
+/* TIPOGRAFÍA MÁGICA Y ÉPICA PARA TÍTULOS */
+.hero h2 {
+  font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #211642;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 20px rgba(124, 82, 246, 0.3), 0 2px 4px rgba(0,0,0,0.1);
+  line-height: 1.2;
 }
 
-/* HEADER MUCHO MÁS ALTO/GORDO PARA QUE NUNCA SE CORTE EL AVATAR */
+.brand-text h1 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f7f3ff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 12px rgba(200, 182, 255, 0.5);
+}
+
+h3, .magic-title {
+  font-family: 'MedievalSharp', cursive, serif;
+  letter-spacing: 0.5px;
+}
+
+/* HEADER ANCHO / CERO CORTES */
 header {
   background: var(--color-header-bg);
   color: #ffffff;
@@ -76,21 +95,13 @@ header {
   animation: pulseGlow 3s infinite ease-in-out;
 }
 
-.brand-text h1 {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #f7f3ff;
-  letter-spacing: 0.8px;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-}
-
 .brand-text p {
   font-size: 0.82rem;
   color: #d1c6f3;
   letter-spacing: 0.3px;
 }
 
-/* ORBE / AVATAR CENTRADO CON BRILLO PULSANTE */
+/* CÍRCULO DEL AVATAR (CERO CORTES Y NEUTRO) */
 .header-avatar {
   position: absolute;
   left: 50%;
@@ -100,19 +111,13 @@ header {
   height: 86px;
   border-radius: 50%;
   border: 3px solid #ffffff;
-  background: linear-gradient(135deg, #a080ff 0%, #6c8eff 100%);
+  background: linear-gradient(135deg, #d3c3f7 0%, #b8c7ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(27, 22, 56, 0.4), 0 0 20px rgba(184, 192, 255, 0.6);
   z-index: 20;
-  animation: avatarPulse 4s infinite ease-in-out;
-}
-
-@keyframes avatarPulse {
-  0%, 100% { box-shadow: 0 8px 24px rgba(27, 22, 56, 0.4), 0 0 15px rgba(200, 182, 255, 0.5); }
-  50% { box-shadow: 0 8px 28px rgba(27, 22, 56, 0.5), 0 0 25px rgba(255, 215, 0, 0.6); }
 }
 
 .header-avatar img {
@@ -121,13 +126,7 @@ header {
   object-fit: cover;
 }
 
-.header-avatar-placeholder {
-  font-size: 2.5rem;
-  user-select: none;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
-}
-
-/* SECCIÓN HERO ÉPICA Y LILA */
+/* SECCIÓN HERO LILA */
 .hero {
   background: var(--color-hero-bg);
   text-align: center;
@@ -153,25 +152,16 @@ header {
   50% { transform: translateY(-10px) scale(1.15); opacity: 1; }
 }
 
-.hero h2 {
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: var(--color-text-title);
-  margin-bottom: 14px;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 15px rgba(124, 82, 246, 0.15);
-}
-
 .hero p {
   max-width: 650px;
   margin: 0 auto 26px auto;
   color: #4a4073;
-  font-size: 1rem;
+  font-size: 1.02rem;
   line-height: 1.65;
   font-weight: 500;
 }
 
-/* BOTÓN PRINCIPAL MÁGICO */
+/* BOTÓN PRINCIPAL */
 .btn-hero {
   background: linear-gradient(135deg, #7c52f6 0%, #6c8eff 100%);
   color: #ffffff;
@@ -187,8 +177,6 @@ header {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  position: relative;
-  overflow: hidden;
 }
 
 .btn-hero:hover {
@@ -196,7 +184,7 @@ header {
   box-shadow: 0 10px 28px rgba(124, 82, 246, 0.5);
 }
 
-/* BUSCADOR Y ESTADÍSTICAS */
+/* CONTROLES Y BUSCADOR */
 .top-controls {
   max-width: 1220px;
   margin: 20px auto 0 auto;
@@ -272,7 +260,7 @@ header {
   gap: 28px;
 }
 
-/* BARRA LATERAL TARJETAS CON BRILLO */
+/* BARRA LATERAL TARJETAS */
 nav {
   display: flex;
   flex-direction: column;
@@ -291,7 +279,6 @@ nav {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   width: 100%;
-  position: relative;
 }
 
 .nav-card:hover {
@@ -321,7 +308,7 @@ nav {
 }
 
 .nav-card h3 {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--color-text-title);
   margin-bottom: 4px;
@@ -343,7 +330,7 @@ nav {
   color: var(--color-accent);
 }
 
-/* ÁREA DERECHA DE CONTENIDO */
+/* CONTENIDO DERECHO */
 .tab-content {
   display: none;
   background-color: var(--color-card);
@@ -373,7 +360,7 @@ nav {
 }
 
 .tree-header-flex h3 {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--color-text-title);
 }
@@ -393,7 +380,7 @@ nav {
   box-shadow: 0 2px 6px rgba(76, 110, 245, 0.12);
 }
 
-/* VIEWPORT DEL ÁRBOL GENEALÓGICO */
+/* ÁRBOLES GENEALÓGICOS */
 .tree-viewport {
   background: linear-gradient(180deg, #faf8fe 0%, #f4effd 100%);
   border-radius: 18px;
@@ -485,7 +472,7 @@ nav {
 }
 
 .sim-tree-card h4 {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--color-text-title);
   margin-bottom: 3px;
@@ -513,7 +500,7 @@ nav {
   background: #e2d2fe;
 }
 
-/* GRID DE TARJETAS (LORE, CASAS, MASCOTAS) */
+/* CARDS GRID (LORE, CASAS, MASCOTAS) */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -538,7 +525,7 @@ nav {
 }
 
 .info-card h3 {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--color-text-title);
 }
@@ -618,7 +605,7 @@ nav {
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 .cancel-btn { background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; }
 
-/* ADAPTACIÓN MÓVIL PENSADA PARA EVITAR CORTES */
+/* ADAPTACIÓN MÓVIL */
 @media (max-width: 768px) {
   .main-layout {
     grid-template-columns: 1fr;
@@ -627,6 +614,6 @@ nav {
     padding: 28px 16px 50px 16px;
   }
   .hero h2 {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 }
