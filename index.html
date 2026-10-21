@@ -13,11 +13,11 @@
 </head>
 <body>
 
-  <!-- HEADER OSCURO -->
+  <!-- HEADER (Sin texto lateral para evitar cortes en móvil, solo el círculo listo para tu foto) -->
   <header>
-    <!-- Avatar superpuesto exactamente en el centro -->
     <div class="header-avatar">
-      <img src="" alt="Foto familia">
+      <!-- Cambia el atributo src cuando quieras poner tu foto, o déjalo vacío -->
+      <img src="" alt="">
     </div>
   </header>
 
@@ -28,10 +28,10 @@
     <button class="btn-hero" onclick="openLoreModal()">Crear una nueva historia</button>
   </section>
 
-  <!-- CONTROLES (Buscador y Estadísticas para Supabase) -->
+  <!-- CONTROLES (Buscador y Estadísticas) -->
   <div class="top-controls">
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Buscar..." oninput="handleSearch()">
+      <input type="text" id="searchInput" placeholder="Buscar sim, historia, mundo..." oninput="handleSearch()">
     </div>
     <div class="stats-badges">
       <span class="stat-pill">Sims: <strong id="statSims">0</strong></span>
@@ -106,7 +106,7 @@
         </div>
       </section>
 
-      <!-- HISTORIA  -->
+      <!-- HISTORIA -->
       <section id="lore" class="tab-content">
         <div class="tree-header-flex">
           <div>
@@ -275,7 +275,7 @@
       if (activeBtn) activeBtn.classList.add('active');
     };
   </script>
-  <!-- Archivo JS de Supabase  -->
+  <!-- Archivo JS de Supabase -->
   <script src="js/app.js"></script>
 </body>
 </html>
