@@ -108,8 +108,8 @@ window.saveSim = async function(e) {
     spouse: document.getElementById('simSpouse').value || "",
     image_url: document.getElementById('simImage').value || "",
     traits: document.getElementById('simTraits').value || "Sin rasgos",
-    house: document.getElementById('simHouse').value || "",
-    lore: document.getElementById('simLore').value || ""
+    house: document.getElementById('simHouse').value || "", // Hogar vinculado a Casas
+    lore: document.getElementById('simLore').value || ""    // Biografía vinculada a Historia
   };
 
   let error;
@@ -347,9 +347,7 @@ function renderTree() {
 
   const renderedSimIds = new Set();
 
-  // Función recursiva que renderiza Sims o parejas y sus descendientes a cualquier nivel
   function buildRecursiveTree(parentIds) {
-    // Buscar Sims cuyos padres sean alguno de los IDs proporcionados
     const children = filteredSims.filter(s => 
       (parentIds.includes(String(s.father_id)) || parentIds.includes(String(s.mother_id))) &&
       !renderedSimIds.has(String(s.id))
@@ -359,11 +357,9 @@ function renderTree() {
 
     let branchHtml = '<ul>';
     
-    // Procesar cada hijo
     children.forEach(child => {
       if (renderedSimIds.has(String(child.id))) return;
 
-      // Buscar si este hijo tiene cónyuge/pareja registrada en el sistema
       const partner = filteredSims.find(p => 
         String(p.id) !== String(child.id) &&
         !renderedSimIds.has(String(p.id)) &&
@@ -405,7 +401,6 @@ function renderTree() {
     return branchHtml;
   }
 
-  // Raíces principales (Fundadores sin padres)
   const rootSims = filteredSims.filter(s => !s.father_id && !s.mother_id);
   let treeHtml = '<ul>';
 
@@ -516,13 +511,12 @@ function renderPetTree() {
   container.innerHTML = treeHtml;
 }
 
-// --- RENDER HISTORIA (INCLUYE CAPÍTULOS Y BIOGRAFÍAS DE SIMS) ---
+// --- RENDER HISTORIA ---
 function renderLore() {
   const loreGrid = document.getElementById('loreGrid');
   if (!loreGrid) return;
   let html = '';
 
-  // 1. Mostrar Biografías de los Sims que tengan lore
   const simsWithLore = simsData.filter(s => s.lore && s.lore.trim() !== "");
   simsWithLore.forEach(sim => {
     if (searchQuery && !sim.name.toLowerCase().includes(searchQuery) && !sim.lore.toLowerCase().includes(searchQuery)) return;
@@ -540,7 +534,6 @@ function renderLore() {
     `;
   });
 
-  // 2. Mostrar Capítulos independientes
   extraLore.forEach(ev => {
     if (searchQuery && !ev.title.toLowerCase().includes(searchQuery) && !ev.desc.toLowerCase().includes(searchQuery)) return;
     html += `
@@ -560,7 +553,7 @@ function renderLore() {
   loreGrid.innerHTML = html;
 }
 
-// --- RENDER CASAS (VINCULA AUTOMÁTICAMENTE LOS SIMS QUE VIVEN ALLÍ) ---
+// --- RENDER CASAS ---
 function renderHouses() {
   const housesGrid = document.getElementById('casasGrid');
   if (!housesGrid) return;
@@ -569,11 +562,8 @@ function renderHouses() {
   housesData.forEach(h => {
     if (searchQuery && !h.name.toLowerCase().includes(searchQuery) && !h.world.toLowerCase().includes(searchQuery)) return;
 
-    // Buscar Sims cuyo campo "house" coincida con el nombre de esta residencia
     const residentSims = simsData.filter(s => s.house && s.house.toLowerCase().trim() === h.name.toLowerCase().trim());
     let residentNames = residentSims.map(s => s.name).join(', ');
-
-    // Si hay un texto manual en h.sims, usarlo o combinarlo
     let finalResidents = residentNames || h.sims || 'Sin asignación';
 
     html += `
