@@ -13,24 +13,35 @@
 </head>
 <body>
 
-  <!-- HEADER (Sin texto lateral para evitar cortes en móvil, solo el círculo listo para tu foto) -->
+  <!-- HEADER CON LOGO MÁGICO -->
   <header>
-    <div class="header-avatar">
-      <!-- Cambia el atributo src cuando quieras poner tu foto, o déjalo vacío -->
-      <img src="" alt="">
+    <div class="brand">
+      <div class="plumbob-badge">
+        💎
+      </div>
+      <div class="brand-text">
+        <h1>La saga de Los Sims</h1>
+        <p>Historia de unos novios</p>
+      </div>
+    </div>
+
+    <!-- AVATAR CENTRADO (MUESTRA ICONO MÁGICO HASTA QUE PONGAS TU FOTO) -->
+    <div class="header-avatar" id="avatarContainer">
+      <span class="header-avatar-placeholder">🔮</span>
     </div>
   </header>
 
-  <!-- SECCIÓN HERO LILA -->
+  <!-- SECCIÓN HERO LILA MÁGICA -->
   <section class="hero">
     <h2>La Profecía del Primogénito</h2>
     <p>Todo comenzó con la desesperada lucha de unos padres por proteger a su primer hijo. Al enterarse de una aterradora profecía que predecía su muerte, hicieron lo imposible por burlar al destino.</p>
-    <button class="btn-hero" onclick="openLoreModal()">Crear una nueva historia</button>
+    <button class="btn-hero" onclick="openLoreModal()">✨ Crear una nueva historia</button>
   </section>
 
-  <!-- CONTROLES (Buscador y Estadísticas) -->
+  <!-- CONTROLES Y BUSCADOR -->
   <div class="top-controls">
     <div class="search-box">
+      <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Buscar sim, historia, mundo..." oninput="handleSearch()">
     </div>
     <div class="stats-badges">
@@ -77,7 +88,7 @@
       </button>
 
       <button class="nav-card" onclick="switchTab('casas', event)" id="btn-casas">
-        <div class="card-icon-box">🖼️</div>
+        <div class="card-icon-box">🏰</div>
         <h3>Casa</h3>
         <p>¿Dónde vive cada Sim?</p>
         <div class="card-action-row">
@@ -97,7 +108,7 @@
             <p>Familia Rivera - tres generaciones</p>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <div class="gen-pill">♡</div>
+            <div class="gen-pill">♡ 3 generaciones</div>
             <button class="action-btn" onclick="openSimModal()">+ Añadir Sim</button>
           </div>
         </div>
@@ -275,7 +286,7 @@
       if (activeBtn) activeBtn.classList.add('active');
     };
   </script>
-  <!-- Archivo JS de Supabase -->
+  <!-- Archivo JS de Supabase intacto -->
   <script src="js/app.js"></script>
 </body>
 </html>
