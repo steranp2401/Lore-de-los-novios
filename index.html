@@ -25,7 +25,7 @@
     <div class="header-avatar" id="avatarContainer"></div>
   </header>
 
-  <!-- HERO -->
+  <!-- SECCIÓN HERO CON LOS EMOJIS LATERALES MOVIÉNDOSE -->
   <section class="hero">
     <span class="hero-sparkle-left">✨</span>
     <span class="hero-sparkle-right">🌙</span>
@@ -102,7 +102,7 @@
         </div>
       </section>
 
-      <!-- MASCOTAS (CON SU PROPIO ÁRBOL) -->
+      <!-- MASCOTAS -->
       <section id="mascotas" class="tab-content">
         <div class="tree-header-flex">
           <div>
@@ -143,13 +143,12 @@
     </main>
   </div>
 
-  <!-- MODAL SIM -->
+  <!-- MODAL SIM (CON PADRE Y MADRE INDEPENDIENTES) -->
   <div class="modal-overlay" id="simModal">
     <div class="modal-card">
       <h2 id="simModalTitle">Añadir Nuevo Sim</h2>
       <form id="simForm" onsubmit="saveSim(event)">
         <input type="hidden" id="simId" value="">
-        <input type="hidden" id="simParentId" value="">
         <div class="form-group">
           <label>Nombre y Apellido:</label>
           <input type="text" id="simName" required placeholder="Ej: Bella Goth">
@@ -167,9 +166,15 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Padre / Madre (Árbol):</label>
-          <select id="simParentSelect">
-            <option value="">-- Ninguno (Fundador Raíz) --</option>
+          <label>Padre:</label>
+          <select id="simFatherSelect">
+            <option value="">-- Ninguno --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Madre:</label>
+          <select id="simMotherSelect">
+            <option value="">-- Ninguna --</option>
           </select>
         </div>
         <div class="form-group">
@@ -203,7 +208,7 @@
   <!-- MODAL HISTORIA -->
   <div class="modal-overlay" id="loreModal">
     <div class="modal-card">
-      <h2 id="loreModalTitle">Añadir Capítulo</h2>
+      <h2>Añadir Capítulo</h2>
       <form onsubmit="saveLoreEvent(event)">
         <input type="hidden" id="loreId" value="">
         <div class="form-group">
@@ -229,7 +234,7 @@
   <!-- MODAL CASA -->
   <div class="modal-overlay" id="houseModal">
     <div class="modal-card">
-      <h2 id="houseModalTitle">Añadir Residencia</h2>
+      <h2>Añadir Residencia</h2>
       <form onsubmit="saveHouse(event)">
         <input type="hidden" id="houseId" value="">
         <div class="form-group">
@@ -256,10 +261,10 @@
     </div>
   </div>
 
-  <!-- MODAL MASCOTA (CON PADRE PARA ÁRBOL) -->
+  <!-- MODAL MASCOTA -->
   <div class="modal-overlay" id="petModal">
     <div class="modal-card">
-      <h2 id="petModalTitle">Añadir Mascota</h2>
+      <h2>Añadir Mascota</h2>
       <form onsubmit="savePet(event)">
         <input type="hidden" id="petId" value="">
         <div class="form-group">
