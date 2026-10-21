@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=MedievalSharp&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Fondamento:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
   --color-header-bg: linear-gradient(135deg, #1b1638 0%, #2a2254 50%, #392e6e 100%);
@@ -34,33 +34,34 @@ body {
     radial-gradient(circle at 90% 85%, rgba(108, 142, 255, 0.1) 0%, transparent 40%);
 }
 
-/* TIPOGRAFÍA MÁGICA Y ÉPICA PARA TÍTULOS */
+/* TIPOGRAFÍA MÁGICA ESTILO MAGICAL ROMANCE / FANTASÍA DE CUENTO */
 .hero h2 {
-  font-family: 'Cinzel Decorative', 'MedievalSharp', serif;
-  font-size: 2.8rem;
-  font-weight: 900;
+  font-family: 'Berkshire Swash', 'Fondamento', cursive;
+  font-size: 3.2rem;
+  font-weight: 400;
   color: #211642;
   margin-bottom: 16px;
   letter-spacing: 1px;
-  text-shadow: 0 0 20px rgba(124, 82, 246, 0.3), 0 2px 4px rgba(0,0,0,0.1);
-  line-height: 1.2;
+  text-shadow: 0 0 18px rgba(124, 82, 246, 0.25), 0 2px 4px rgba(0,0,0,0.08);
+  line-height: 1.25;
 }
 
 .brand-text h1 {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-family: 'Berkshire Swash', cursive;
+  font-size: 1.3rem;
+  font-weight: 400;
   color: #f7f3ff;
   letter-spacing: 1px;
   text-shadow: 0 0 12px rgba(200, 182, 255, 0.5);
 }
 
 h3, .magic-title {
-  font-family: 'MedievalSharp', cursive, serif;
+  font-family: 'Fondamento', cursive;
+  font-size: 1.25rem;
   letter-spacing: 0.5px;
 }
 
-/* HEADER ANCHO / CERO CORTES */
+/* HEADER ANCHO / SIN CORTES */
 header {
   background: var(--color-header-bg);
   color: #ffffff;
@@ -92,7 +93,6 @@ header {
   font-size: 1.3rem;
   border: 1px solid rgba(255, 215, 0, 0.4);
   box-shadow: 0 0 16px rgba(200, 182, 255, 0.3);
-  animation: pulseGlow 3s infinite ease-in-out;
 }
 
 .brand-text p {
@@ -101,7 +101,7 @@ header {
   letter-spacing: 0.3px;
 }
 
-/* CÍRCULO DEL AVATAR (CERO CORTES Y NEUTRO) */
+/* CÍRCULO DEL AVATAR TOTALMENTE LÍMPIO Y LISTO PARA TU FOTO */
 .header-avatar {
   position: absolute;
   left: 50%;
@@ -110,13 +110,13 @@ header {
   width: 86px;
   height: 86px;
   border-radius: 50%;
-  border: 3px solid #ffffff;
-  background: linear-gradient(135deg, #d3c3f7 0%, #b8c7ff 100%);
+  border: 4px solid #ffffff;
+  background: linear-gradient(135deg, #e0d4f7 0%, #c4d2ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(27, 22, 56, 0.4), 0 0 20px rgba(184, 192, 255, 0.6);
+  box-shadow: 0 8px 24px rgba(27, 22, 56, 0.35), 0 0 20px rgba(184, 192, 255, 0.5);
   z-index: 20;
 }
 
@@ -126,7 +126,7 @@ header {
   object-fit: cover;
 }
 
-/* SECCIÓN HERO LILA */
+/* SECCIÓN HERO LILA CON DESTELLOS LATERALES QUE SE MUEVEN */
 .hero {
   background: var(--color-hero-bg);
   text-align: center;
@@ -136,16 +136,15 @@ header {
   border-bottom: 1px solid var(--color-border);
 }
 
-.hero-sparkle-1, .hero-sparkle-2, .hero-sparkle-3 {
+.hero-sparkle-left, .hero-sparkle-right {
   position: absolute;
   user-select: none;
   pointer-events: none;
   animation: magicFloat 4s infinite ease-in-out;
 }
 
-.hero-sparkle-1 { top: 20px; left: 10%; font-size: 1.8rem; animation-delay: 0s; }
-.hero-sparkle-2 { top: 30px; right: 12%; font-size: 1.5rem; animation-delay: 1.5s; }
-.hero-sparkle-3 { bottom: 15px; left: 20%; font-size: 1.2rem; animation-delay: 0.8s; }
+.hero-sparkle-left { top: 35px; left: 12%; font-size: 1.8rem; animation-delay: 0s; }
+.hero-sparkle-right { top: 35px; right: 12%; font-size: 1.6rem; animation-delay: 2s; }
 
 @keyframes magicFloat {
   0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
@@ -614,6 +613,6 @@ nav {
     padding: 28px 16px 50px 16px;
   }
   .hero h2 {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 }
