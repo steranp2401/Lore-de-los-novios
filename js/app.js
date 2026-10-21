@@ -308,6 +308,7 @@ window.handleFamilyFilter = function() {
   renderTree();
 };
 
+// --- RENDER ÁRBOL CON PAREJAS UNIDAS Y HIJOS ÚNICOS ---
 function renderTree() {
   const container = document.getElementById('treeView');
   if (!container) return;
@@ -326,28 +327,46 @@ function renderTree() {
     return;
   }
 
-  function buildBranch(simId) {
-    const children = filteredSims.filter(s => String(s.father_id) === String(simId) || String(s.mother_id) === String(simId));
+  function renderSimCard(sim) {
+    const avatarContent = sim.image_url ? `<img src="${sim.image_url}" alt="Sim">` : `🔮`;
+    return `
+      <div class="sim-tree-card">
+        <div class="sim-avatar">${avatarContent}</div>
+        <h4>${sim.name}</h4>
+        <div class="sim-tree-meta">${sim.generation || ''}</div>
+        ${sim.spouse ? `<div style="font-size:0.72rem; color:#7c52f6; font-weight:600;">💍 ${sim.spouse}</div>` : ''}
+        ${sim.traits ? `<div style="font-size:0.7rem; color:#6e6592; margin-top:2px;">${sim.traits}</div>` : ''}
+        <div class="card-actions-bottom">
+          <button class="mini-btn" onclick="openSimModal(null, '${sim.id}')">Editar</button>
+          <button class="mini-btn" onclick="openSimModal('${sim.id}')">+ Hijo</button>
+          <button class="mini-btn" onclick="deleteItem('sim', '${sim.id}')" style="color:#ff4d4d;">✕</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Encontrar hijos de una pareja exacta (fatherId + motherId) o de un solo progenitor si el otro no está
+  function buildBranchForCouple(fatherId, motherId) {
+    const children = filteredSims.filter(s => {
+      const matchFather = fatherId ? String(s.father_id) === String(fatherId) : true;
+      const matchMother = motherId ? String(s.mother_id) === String(motherId) : true;
+      const hasAtLeastOne = String(s.father_id) === String(fatherId) || String(s.mother_id) === String(motherId);
+      return hasAtLeastOne && (fatherId ? String(s.father_id) === String(fatherId) : true) && (motherId ? String(s.mother_id) === String(motherId) : true);
+    });
+
     if (children.length === 0) return '';
 
     let branchHtml = '<ul>';
     children.forEach(child => {
-      const avatarContent = child.image_url ? `<img src="${child.image_url}" alt="Sim">` : `🔮`;
+      // Buscar si este hijo a su vez tiene pareja o hijos propios para continuar el árbol
+      const childFather = child.id;
+      // Buscamos si tiene pareja registrada en el sistema para agruparlos también abajo
+      const partnerOfChild = filteredSims.find(s => String(s.mother_id) === String(child.id) || String(s.father_id) === String(child.id));
+      
       branchHtml += `
         <li>
-          <div class="sim-tree-card">
-            <div class="sim-avatar">${avatarContent}</div>
-            <h4>${child.name}</h4>
-            <div class="sim-tree-meta">${child.generation || ''}</div>
-            ${child.spouse ? `<div style="font-size:0.72rem; color:#7c52f6; font-weight:600;">💍 ${child.spouse}</div>` : ''}
-            ${child.traits ? `<div style="font-size:0.7rem; color:#6e6592; margin-top:2px;">${child.traits}</div>` : ''}
-            <div class="card-actions-bottom">
-              <button class="mini-btn" onclick="openSimModal(null, '${child.id}')">Editar</button>
-              <button class="mini-btn" onclick="openSimModal('${child.id}')">+ Hijo</button>
-              <button class="mini-btn" onclick="deleteItem('sim', '${child.id}')" style="color:#ff4d4d;">✕</button>
-            </div>
-          </div>
-          ${buildBranch(child.id)}
+          ${renderSimCard(child)}
+          ${childPartnerBranch(child)}
         </li>
       `;
     });
@@ -355,27 +374,34 @@ function renderTree() {
     return branchHtml;
   }
 
+  function childPartnerBranch(sim) {
+    // Buscar hijos donde este sim sea padre o madre
+    const children = filteredSims.filter(s => String(s.father_id) === String(sim.id) || String(s.mother_id) === String(sim.id));
+    if (children.length === 0) return '';
+
+    let html = '<ul>';
+    children.forEach(child => {
+      html += `
+        <li>
+          ${renderSimCard(child)}
+          ${childPartnerBranch(child)}
+        </li>
+      `;
+    });
+    html += '</ul>';
+    return html;
+  }
+
+  // Raíces: Sims fundadores sin padres
   const roots = filteredSims.filter(s => !s.father_id && !s.mother_id);
   let treeHtml = '<ul>';
   
   if (roots.length > 0) {
     roots.forEach(root => {
-      const avatarContent = root.image_url ? `<img src="${root.image_url}" alt="Sim">` : `🔮`;
       treeHtml += `
         <li>
-          <div class="sim-tree-card">
-            <div class="sim-avatar">${avatarContent}</div>
-            <h4>${root.name}</h4>
-            <div class="sim-tree-meta">${root.generation || ''}</div>
-            ${root.spouse ? `<div style="font-size:0.72rem; color:#7c52f6; font-weight:600;">💍 ${root.spouse}</div>` : ''}
-            ${root.traits ? `<div style="font-size:0.7rem; color:#6e6592; margin-top:2px;">${root.traits}</div>` : ''}
-            <div class="card-actions-bottom">
-              <button class="mini-btn" onclick="openSimModal(null, '${root.id}')">Editar</button>
-              <button class="mini-btn" onclick="openSimModal('${root.id}')">+ Hijo</button>
-              <button class="mini-btn" onclick="deleteItem('sim', '${root.id}')" style="color:#ff4d4d;">✕</button>
-            </div>
-          </div>
-          ${buildBranch(root.id)}
+          ${renderSimCard(root)}
+          ${childPartnerBranch(root)}
         </li>
       `;
     });
