@@ -10,6 +10,7 @@ let petsData = [];
 
 let searchQuery = "";
 let selectedFamily = "";
+let expandedSims = new Set(); // Rastreador para "Leer más / Leer menos"
 
 async function loadAllData() {
   try {
@@ -513,7 +514,7 @@ function renderPetTree() {
   container.innerHTML = treeHtml;
 }
 
-// --- RENDER HISTORIA (EXCLUSIVAMENTE CAPÍTULOS REGISTRADOS) ---
+// --- RENDER HISTORIA ---
 function renderLore() {
   const loreGrid = document.getElementById('loreGrid');
   if (!loreGrid) return;
@@ -538,7 +539,17 @@ function renderLore() {
   loreGrid.innerHTML = html;
 }
 
-// --- RENDER SIMS (FICHAS INDIVIDUALES DE SIMS) ---
+// --- CONTROL DE EXPANSIÓN (LEER MÁS / LEER MENOS) ---
+window.toggleSimBio = function(id) {
+  if (expandedSims.has(String(id))) {
+    expandedSims.delete(String(id));
+  } else {
+    expandedSims.add(String(id));
+  }
+  renderSims();
+};
+
+// --- RENDER SIMS (FICHAS EXPANDIDAS) ---
 function renderSims() {
   const simsGrid = document.getElementById('simsGrid');
   if (!simsGrid) return;
@@ -548,24 +559,41 @@ function renderSims() {
     if (searchQuery && !sim.name.toLowerCase().includes(searchQuery) && !(sim.lore && sim.lore.toLowerCase().includes(searchQuery))) return;
     const avatarContent = sim.image_url ? `<img src="${sim.image_url}" alt="Sim" style="width:100%; height:100%; object-fit:cover;">` : `👤`;
     
+    const loreText = sim.lore || "";
+    const characterLimit = 160; 
+    const isLong = loreText.length > characterLimit;
+    const isExpanded = expandedSims.has(String(sim.id));
+    
+    let displayLore = loreText;
+    if (isLong && !isExpanded) {
+      displayLore = loreText.substring(0, characterLimit) + "...";
+    }
+
     html += `
-      <div class="info-card">
+      <div class="sim-expanded-card">
         <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
-          <div style="width:48px; height:48px; border-radius:50%; background:#eee7fb; overflow:hidden; border:2px solid #ebdffd; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <div style="display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+          <div style="width:64px; height:64px; border-radius:50%; background:#eee7fb; overflow:hidden; border:2px solid #ebdffd; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
             ${avatarContent}
           </div>
-          <div>
-            <h3 style="margin-bottom:2px;">${sim.name}</h3>
-            <div class="meta" style="color:#7c52f6; font-size:0.75rem;">${sim.generation || ''} • ${sim.family || 'Principal'}</div>
+          <div style="flex:1; min-width:240px;">
+            <h3 style="margin-bottom:2px; font-size:1.25rem; color:var(--color-text-title);">${sim.name}</h3>
+            <div class="meta" style="color:#7c52f6; font-size:0.8rem; margin-bottom:8px; font-weight:600;">${sim.generation || ''} • Dinastía: ${sim.family || 'Principal'}</div>
+            
+            <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.84rem; margin-bottom:10px; color:var(--color-text-muted);">
+              ${sim.spouse ? `<span>💍 <strong>Cónyuge:</strong> ${sim.spouse}</span>` : ''}
+              ${sim.traits ? `<span>✨ <strong>Rasgos:</strong> ${sim.traits}</span>` : ''}
+              ${sim.house ? `<span>🏡 <strong>Hogar:</strong> ${sim.house}</span>` : ''}
+            </div>
+
+            <div class="sim-expanded-content" style="font-size:0.92rem; line-height:1.5; color:var(--color-text-main);">
+              ${displayLore ? displayLore : '<span style="color:#999; font-style:italic;">Sin biografía registrada.</span>'}
+              ${isLong ? `<br><button class="read-more-btn" onclick="toggleSimBio('${sim.id}')">${isExpanded ? 'Leer menos ▲' : 'Leer más ▼'}</button>` : ''}
+            </div>
           </div>
         </div>
-        ${sim.spouse ? `<div style="font-size:0.75rem; color:#7c52f6; font-weight:600;">💍 Cónyuge: ${sim.spouse}</div>` : ''}
-        ${sim.traits ? `<div style="font-size:0.75rem; color:#6e6592;">✨ Rasgos: ${sim.traits}</div>` : ''}
-        ${sim.house ? `<div style="font-size:0.75rem; color:#4c6ef5; font-weight:600;">🏡 Hogar: ${sim.house}</div>` : ''}
-        ${sim.lore ? `<p style="font-size:0.85rem; margin-top:4px;">${sim.lore}</p>` : '<p style="font-size:0.82rem; color:#999; font-style:italic;">Sin biografía.</p>'}
-        <div class="card-actions-bottom">
-          <button class="mini-btn" onclick="openSimModal(null, '${sim.id}')">Editar Sim</button>
+        <div class="card-actions-bottom" style="justify-content:flex-end; margin-top:2px;">
+          <button class="mini-btn" onclick="openSimModal(null, '${sim.id}')">Editar Ficha</button>
         </div>
       </div>
     `;
