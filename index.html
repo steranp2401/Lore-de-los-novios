@@ -48,7 +48,7 @@
     </div>
   </div>
 
-  <!-- LAYOUT PRINCIPAL (ORDEN: HISTORIA, SIMS, ÁRBOL, MASCOTAS, CASAS) -->
+  <!-- LAYOUT PRINCIPAL -->
   <div class="main-layout">
     <nav>
       <button class="nav-card active" onclick="switchTab('lore', event)" id="btn-lore">
@@ -88,7 +88,7 @@
     </nav>
 
     <main>
-      <!-- HISTORIA (SOLO CAPÍTULOS MANUALES) -->
+      <!-- HISTORIA -->
       <section id="lore" class="tab-content active">
         <div class="tree-header-flex">
           <div>
@@ -100,7 +100,7 @@
         <div class="cards-grid" id="loreGrid"></div>
       </section>
 
-      <!-- FICHAS DE SIMS -->
+      <!-- FICHAS DE SIMS (MUESTRA EN MODO LISTA ALARGADA) -->
       <section id="sims" class="tab-content">
         <div class="tree-header-flex">
           <div>
@@ -109,7 +109,7 @@
           </div>
           <button class="action-btn" onclick="openSimModal()">+ Añadir Sim</button>
         </div>
-        <div class="cards-grid" id="simsGrid"></div>
+        <div class="cards-grid sims-list-mode" id="simsGrid"></div>
       </section>
 
       <!-- ÁRBOL DE SIMS -->
