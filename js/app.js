@@ -108,8 +108,8 @@ window.saveSim = async function(e) {
     spouse: document.getElementById('simSpouse').value || "",
     image_url: document.getElementById('simImage').value || "",
     traits: document.getElementById('simTraits').value || "Sin rasgos",
-    house: document.getElementById('simHouse').value || "", // Hogar vinculado a Casas
-    lore: document.getElementById('simLore').value || ""    // Biografía vinculada a Historia
+    house: document.getElementById('simHouse').value || "",
+    lore: document.getElementById('simLore').value || ""
   };
 
   let error;
@@ -511,28 +511,11 @@ function renderPetTree() {
   container.innerHTML = treeHtml;
 }
 
-// --- RENDER HISTORIA ---
+// --- RENDER HISTORIA  ---
 function renderLore() {
   const loreGrid = document.getElementById('loreGrid');
   if (!loreGrid) return;
   let html = '';
-
-  const simsWithLore = simsData.filter(s => s.lore && s.lore.trim() !== "");
-  simsWithLore.forEach(sim => {
-    if (searchQuery && !sim.name.toLowerCase().includes(searchQuery) && !sim.lore.toLowerCase().includes(searchQuery)) return;
-    html += `
-      <div class="info-card">
-        <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
-        <h3>👤 ${sim.name}</h3>
-        <div class="meta" style="color:#7c52f6; font-size:0.78rem;">${sim.generation || ''} • ${sim.traits || ''}</div>
-        <p style="font-size:0.85rem;">${sim.lore}</p>
-        ${sim.house ? `<div style="font-size:0.75rem; color:#4c6ef5; font-weight:600; margin-top:4px;">🏡 ${sim.house}</div>` : ''}
-        <div class="card-actions-bottom">
-          <button class="mini-btn" onclick="openSimModal(null, '${sim.id}')">Editar Sim</button>
-        </div>
-      </div>
-    `;
-  });
 
   extraLore.forEach(ev => {
     if (searchQuery && !ev.title.toLowerCase().includes(searchQuery) && !ev.desc.toLowerCase().includes(searchQuery)) return;
@@ -549,8 +532,45 @@ function renderLore() {
     `;
   });
 
-  if (!html) html = `<div class="empty-state">No hay eventos de historia ni biografías de Sims registradas.</div>`;
+  if (!html) html = `<div class="empty-state">No hay eventos de historia registrados.</div>`;
   loreGrid.innerHTML = html;
+}
+
+// --- RENDER SIMS (FICHAS DE CADA SIM) ---
+function renderSims() {
+  const simsGrid = document.getElementById('simsGrid');
+  if (!simsGrid) return;
+  let html = '';
+
+  simsData.forEach(sim => {
+    if (searchQuery && !sim.name.toLowerCase().includes(searchQuery) && !(sim.lore && sim.lore.toLowerCase().includes(searchQuery))) return;
+    const avatarContent = sim.image_url ? `<img src="${sim.image_url}" alt="Sim" style="width:100%; height:100%; object-fit:cover;">` : `👤`;
+    
+    html += `
+      <div class="info-card">
+        <button class="delete-btn" onclick="deleteItem('sim', '${sim.id}')">✕</button>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+          <div style="width:48px; height:48px; border-radius:50%; background:#eee7fb; overflow:hidden; border:2px solid #ebdffd; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            ${avatarContent}
+          </div>
+          <div>
+            <h3 style="margin-bottom:2px;">${sim.name}</h3>
+            <div class="meta" style="color:#7c52f6; font-size:0.75rem;">${sim.generation || ''} • ${sim.family || 'Principal'}</div>
+          </div>
+        </div>
+        ${sim.spouse ? `<div style="font-size:0.75rem; color:#7c52f6; font-weight:600;">💍 Cónyuge: ${sim.spouse}</div>` : ''}
+        ${sim.traits ? `<div style="font-size:0.75rem; color:#6e6592;">✨ Rasgos: ${sim.traits}</div>` : ''}
+        ${sim.house ? `<div style="font-size:0.75rem; color:#4c6ef5; font-weight:600;">🏡 Hogar: ${sim.house}</div>` : ''}
+        ${sim.lore ? `<p style="font-size:0.85rem; margin-top:4px;">${sim.lore}</p>` : '<p style="font-size:0.82rem; color:#999; font-style:italic;">Sin biografía.</p>'}
+        <div class="card-actions-bottom">
+          <button class="mini-btn" onclick="openSimModal(null, '${sim.id}')">Editar Sim</button>
+        </div>
+      </div>
+    `;
+  });
+
+  if (!html) html = `<div class="empty-state">No hay fichas de Sims registradas.</div>`;
+  simsGrid.innerHTML = html;
 }
 
 // --- RENDER CASAS ---
@@ -611,7 +631,7 @@ function renderPets() {
 
 function updateStats() {
   document.getElementById('statSims').innerText = simsData.length;
-  document.getElementById('statLore').innerText = simsData.filter(s => s.lore && s.lore.trim() !== "").length + extraLore.length;
+  document.getElementById('statLore').innerText = extraLore.length;
   document.getElementById('statHouses').innerText = housesData.length;
   document.getElementById('statPets').innerText = petsData.length;
 }
@@ -627,6 +647,7 @@ window.handleSearch = function() {
 function renderAll() {
   renderTree();
   renderLore();
+  renderSims();
   renderHouses();
   renderPets();
   updateStats();
