@@ -88,7 +88,7 @@
     </nav>
 
     <main>
-      <!-- HISTORIA -->
+      <!-- HISTORIA (SOLO CAPÍTULOS MANUALES) -->
       <section id="lore" class="tab-content active">
         <div class="tree-header-flex">
           <div>
@@ -224,7 +224,7 @@
     </div>
   </div>
 
-  <!-- MODAL HISTORIA -->
+  <!-- MODAL HISTORIA (AHORA CON SELECTOR DE SIMS) -->
   <div class="modal-overlay" id="loreModal">
     <div class="modal-card">
       <h2>Añadir Capítulo</h2>
@@ -236,7 +236,9 @@
         </div>
         <div class="form-group">
           <label>Sims Involucrados:</label>
-          <input type="text" id="loreSims" placeholder="Ej: Alexander, Bella">
+          <select id="loreSimsSelect">
+            <option value="">-- Seleccionar Sim --</option>
+          </select>
         </div>
         <div class="form-group">
           <label>Detalles:</label>
