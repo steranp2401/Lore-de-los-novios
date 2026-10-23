@@ -48,10 +48,24 @@
     </div>
   </div>
 
-  <!-- LAYOUT PRINCIPAL -->
+  <!-- LAYOUT PRINCIPAL (ORDEN: HISTORIA, SIMS, ÁRBOL, MASCOTAS, CASAS) -->
   <div class="main-layout">
     <nav>
-      <button class="nav-card active" onclick="switchTab('arbol', event)" id="btn-arbol">
+      <button class="nav-card active" onclick="switchTab('lore', event)" id="btn-lore">
+        <div class="card-icon-box">📖</div>
+        <h3>Historia</h3>
+        <p>Capítulos mágicos y acontecimientos.</p>
+        <div class="card-action-row"><span>Ver</span><span>→</span></div>
+      </button>
+
+      <button class="nav-card" onclick="switchTab('sims', event)" id="btn-sims">
+        <div class="card-icon-box">👤</div>
+        <h3>Sims</h3>
+        <p>Fichas y biografías de los miembros del legado.</p>
+        <div class="card-action-row"><span>Ver</span><span>→</span></div>
+      </button>
+
+      <button class="nav-card" onclick="switchTab('arbol', event)" id="btn-arbol">
         <div class="card-icon-box">👥</div>
         <h3>Árbol genealógico</h3>
         <p>Legado, generaciones y linaje de la familia.</p>
@@ -65,13 +79,6 @@
         <div class="card-action-row"><span>Ver</span><span>→</span></div>
       </button>
 
-      <button class="nav-card" onclick="switchTab('lore', event)" id="btn-lore">
-        <div class="card-icon-box">📖</div>
-        <h3>Historia</h3>
-        <p>Capítulos mágicos y acontecimientos.</p>
-        <div class="card-action-row"><span>Ver</span><span>→</span></div>
-      </button>
-
       <button class="nav-card" onclick="switchTab('casas', event)" id="btn-casas">
         <div class="card-icon-box">🏰</div>
         <h3>Casa</h3>
@@ -81,8 +88,32 @@
     </nav>
 
     <main>
+      <!-- HISTORIA -->
+      <section id="lore" class="tab-content active">
+        <div class="tree-header-flex">
+          <div>
+            <h3>Acontecimientos e Historias</h3>
+            <p>Capítulos mágicos y acontecimientos</p>
+          </div>
+          <button class="action-btn" onclick="openLoreModal()">+ Registrar Capítulo</button>
+        </div>
+        <div class="cards-grid" id="loreGrid"></div>
+      </section>
+
+      <!-- FICHAS DE SIMS -->
+      <section id="sims" class="tab-content">
+        <div class="tree-header-flex">
+          <div>
+            <h3>Fichas de Sims</h3>
+            <p>Directorio y biografías de los Sims creados</p>
+          </div>
+          <button class="action-btn" onclick="openSimModal()">+ Añadir Sim</button>
+        </div>
+        <div class="cards-grid" id="simsGrid"></div>
+      </section>
+
       <!-- ÁRBOL DE SIMS -->
-      <section id="arbol" class="tab-content active">
+      <section id="arbol" class="tab-content">
         <div class="tree-header-flex">
           <div>
             <h3>Árbol genealógico</h3>
@@ -115,18 +146,6 @@
           <div class="tree-wrapper" id="petTreeView"></div>
         </div>
         <div class="cards-grid" id="mascotasGrid"></div>
-      </section>
-
-      <!-- HISTORIA -->
-      <section id="lore" class="tab-content">
-        <div class="tree-header-flex">
-          <div>
-            <h3>Acontecimientos e Historias</h3>
-            <p>Biografías y capítulos mágicos</p>
-          </div>
-          <button class="action-btn" onclick="openLoreModal()">+ Registrar Capítulo</button>
-        </div>
-        <div class="cards-grid" id="loreGrid"></div>
       </section>
 
       <!-- CASAS -->
