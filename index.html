@@ -224,11 +224,11 @@
     </div>
   </div>
 
-  <!-- MODAL HISTORIA (AHORA CON SELECTOR DE SIMS) -->
+  <!-- MODAL HISTORIA -->
   <div class="modal-overlay" id="loreModal">
     <div class="modal-card">
       <h2>Añadir Capítulo</h2>
-      <form onsubmit="saveLoreEvent(event)">
+      <form id="loreForm" onsubmit="saveLoreEvent(event)">
         <input type="hidden" id="loreId" value="">
         <div class="form-group">
           <label>Título:</label>
@@ -256,7 +256,7 @@
   <div class="modal-overlay" id="houseModal">
     <div class="modal-card">
       <h2>Añadir Residencia</h2>
-      <form onsubmit="saveHouse(event)">
+      <form id="houseForm" onsubmit="saveHouse(event)">
         <input type="hidden" id="houseId" value="">
         <div class="form-group">
           <label>Nombre del Solar:</label>
@@ -286,7 +286,7 @@
   <div class="modal-overlay" id="petModal">
     <div class="modal-card">
       <h2>Añadir Mascota</h2>
-      <form onsubmit="savePet(event)">
+      <form id="petForm" onsubmit="savePet(event)">
         <input type="hidden" id="petId" value="">
         <div class="form-group">
           <label>Nombre:</label>
@@ -322,15 +322,6 @@
     </div>
   </div>
 
-  <script>
-    const originalSwitchTab = window.switchTab;
-    window.switchTab = function(tabId, ev) {
-      if (originalSwitchTab) originalSwitchTab(tabId, ev);
-      document.querySelectorAll('.nav-card').forEach(card => card.classList.remove('active'));
-      const activeBtn = document.getElementById('btn-' + tabId);
-      if (activeBtn) activeBtn.classList.add('active');
-    };
-  </script>
   <script src="js/app.js"></script>
 </body>
 </html>
