@@ -45,8 +45,13 @@ async function fetchPets() {
 window.switchTab = function(tabId, ev) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-card').forEach(el => el.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
-  if (ev && ev.currentTarget) ev.currentTarget.classList.add('active');
+  
+  const targetTab = document.getElementById(tabId);
+  if (targetTab) targetTab.classList.add('active');
+  
+  const activeBtn = document.getElementById('btn-' + tabId);
+  if (activeBtn) activeBtn.classList.add('active');
+  else if (ev && ev.currentTarget) ev.currentTarget.classList.add('active');
 };
 
 window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; };
@@ -132,11 +137,9 @@ window.saveSim = async function(e) {
 };
 
 window.openLoreModal = function(editId = null) {
+  document.getElementById('loreForm').reset();
   document.getElementById('loreId').value = "";
-  document.getElementById('loreTitle').value = "";
-  document.getElementById('loreDesc').value = "";
 
-  // Llenar el desplegable con la lista actualizada de Sims
   const simsSelect = document.getElementById('loreSimsSelect');
   simsSelect.innerHTML = '<option value="">-- Seleccionar Sim --</option>';
   simsData.forEach(sim => {
@@ -182,11 +185,8 @@ window.saveLoreEvent = async function(e) {
 };
 
 window.openHouseModal = function(editId = null) {
+  document.getElementById('houseForm').reset();
   document.getElementById('houseId').value = "";
-  document.getElementById('houseName').value = "";
-  document.getElementById('houseWorld').value = "";
-  document.getElementById('houseSims').value = "";
-  document.getElementById('houseDesc').value = "";
 
   if (editId) {
     const h = housesData.find(item => String(item.id) === String(editId));
@@ -229,12 +229,8 @@ window.saveHouse = async function(e) {
 };
 
 window.openPetModal = function(parentId = null, editId = null) {
+  document.getElementById('petForm').reset();
   document.getElementById('petId').value = "";
-  document.getElementById('petName').value = "";
-  document.getElementById('petMeta').value = "";
-  document.getElementById('petOwner').value = "";
-  document.getElementById('petImage').value = "";
-  document.getElementById('petDesc').value = "";
 
   const select = document.getElementById('petParentSelect');
   select.innerHTML = '<option value="">-- Ninguno (Fundador) --</option>';
@@ -314,7 +310,7 @@ window.handleFamilyFilter = function() {
   renderTree();
 };
 
-// --- RENDER ÁRBOL GENEALÓGICO RECURSIVO CON PAREJAS ---
+// --- RENDER ÁRBOL GENEALÓGICO ---
 function renderTree() {
   const container = document.getElementById('treeView');
   if (!container) return;
@@ -517,7 +513,7 @@ function renderPetTree() {
   container.innerHTML = treeHtml;
 }
 
-// --- RENDER HISTORIA (SOLO CAPÍTULOS MANUALES) ---
+// --- RENDER HISTORIA (EXCLUSIVAMENTE CAPÍTULOS REGISTRADOS) ---
 function renderLore() {
   const loreGrid = document.getElementById('loreGrid');
   if (!loreGrid) return;
@@ -542,7 +538,7 @@ function renderLore() {
   loreGrid.innerHTML = html;
 }
 
-// --- RENDER SIMS (FICHAS DE CADA SIM) ---
+// --- RENDER SIMS (FICHAS INDIVIDUALES DE SIMS) ---
 function renderSims() {
   const simsGrid = document.getElementById('simsGrid');
   if (!simsGrid) return;
