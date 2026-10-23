@@ -203,14 +203,25 @@ nav { display: flex; flex-direction: column; gap: 12px; }
 
 /* TARJETAS DE CONTENIDO GENERALES */
 .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; width: 100%; }
-.info-card { background-color: #fff; border: 1px solid var(--color-border); border-radius: 18px; padding: 18px; position: relative; display: flex; flex-direction: column; gap: 8px; }
+.info-card { 
+  background-color: #fff; 
+  border: 1px solid var(--color-border); 
+  border-radius: 18px; 
+  padding: 18px; 
+  position: relative; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
 
-/* DISEÑO ALARGADO Y EXPANDIDO PARA LA PESTAÑA SIMS */
-#simsGrid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
+/* FORZAR CONTENEDOR DE SIMS A MODO LISTA ALARGADA */
+#simsGrid.sims-list-mode {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  width: 100% !important;
 }
 
 .sim-expanded-card {
@@ -224,11 +235,14 @@ nav { display: flex; flex-direction: column; gap: 12px; }
   gap: 12px;
   box-shadow: 0 3px 12px rgba(55, 51, 114, 0.03);
   width: 100%;
+  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .sim-expanded-content {
   word-break: break-word;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
 }
 
 .read-more-btn {
@@ -239,7 +253,7 @@ nav { display: flex; flex-direction: column; gap: 12px; }
   font-weight: 700;
   font-size: 0.85rem;
   padding: 0;
-  margin-top: 4px;
+  margin-top: 6px;
   display: inline-block;
 }
 .read-more-btn:hover {
