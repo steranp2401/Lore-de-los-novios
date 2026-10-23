@@ -134,15 +134,21 @@ window.saveSim = async function(e) {
 window.openLoreModal = function(editId = null) {
   document.getElementById('loreId').value = "";
   document.getElementById('loreTitle').value = "";
-  document.getElementById('loreSims').value = "";
   document.getElementById('loreDesc').value = "";
+
+  // Llenar el desplegable con la lista actualizada de Sims
+  const simsSelect = document.getElementById('loreSimsSelect');
+  simsSelect.innerHTML = '<option value="">-- Seleccionar Sim --</option>';
+  simsData.forEach(sim => {
+    simsSelect.innerHTML += `<option value="${sim.name}">${sim.name}</option>`;
+  });
 
   if (editId) {
     const ev = extraLore.find(l => String(l.id) === String(editId));
     if (ev) {
       document.getElementById('loreId').value = ev.id;
       document.getElementById('loreTitle').value = ev.title || "";
-      document.getElementById('loreSims').value = ev.sims || "";
+      simsSelect.value = ev.sims || "";
       document.getElementById('loreDesc').value = ev.desc || "";
     }
   }
@@ -154,7 +160,7 @@ window.saveLoreEvent = async function(e) {
   const editId = document.getElementById('loreId').value;
   const payload = {
     title: document.getElementById('loreTitle').value,
-    sims: document.getElementById('loreSims').value || "",
+    sims: document.getElementById('loreSimsSelect').value || "",
     desc: document.getElementById('loreDesc').value
   };
 
@@ -511,7 +517,7 @@ function renderPetTree() {
   container.innerHTML = treeHtml;
 }
 
-// --- RENDER HISTORIA  ---
+// --- RENDER HISTORIA (SOLO CAPÍTULOS MANUALES) ---
 function renderLore() {
   const loreGrid = document.getElementById('loreGrid');
   if (!loreGrid) return;
@@ -523,7 +529,7 @@ function renderLore() {
       <div class="info-card">
         <button class="delete-btn" onclick="deleteItem('lore', '${ev.id}')">✕</button>
         <h3>📖 ${ev.title}</h3>
-        <div class="meta" style="color:#7c52f6; font-size:0.78rem;">Sims: ${ev.sims || ''}</div>
+        <div class="meta" style="color:#7c52f6; font-size:0.78rem;">Sims: ${ev.sims || 'Sin definir'}</div>
         <p style="font-size:0.85rem;">${ev.desc}</p>
         <div class="card-actions-bottom">
           <button class="mini-btn" onclick="openLoreModal('${ev.id}')">Editar Capítulo</button>
